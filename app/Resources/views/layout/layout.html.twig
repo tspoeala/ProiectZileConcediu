@@ -1,0 +1,108 @@
+{% extends 'base.html.twig' %}
+ {% block stylesheets %}
+     <link href="{{ asset('build/vendor.css') }}" rel="stylesheet">
+     <link href="{{ asset('build/main.css') }}" rel="stylesheet">
+ {% endblock %}
+    {% block header %}
+        {% block navbar %}
+            <!-- Navigation -->
+            <nav class="navbar navbar-default navbar-static-top" role="navigation" style="margin-bottom: 0">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle" data-toggle="collapse"
+                            data-target=".navbar-collapse">
+                        <span class="sr-only">Toggle navigation</span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    <a class="navbar-brand" href="../vacationDays/index.html.twig">SB Admin v2.0</a>
+                </div>
+                <!-- /.navbar-header -->
+
+                <ul class="nav navbar-top-links navbar-right">
+                    {% if is_granted('IS_AUTHENTICATED_FULLY') %}
+                        <li>
+                            <span>Hello {{ app.user.username }} !</span>
+                        </li>
+                        <li>
+                            <a href="/logout">Logout</a>
+                        </li>
+                    {% else %}
+                        <li>
+                            <a href="/register">Registration</a>
+                        </li>
+                        <li>
+                            <a href="/login">Login</a>
+                        </li>
+                    {% endif %}
+                </ul>
+                <!-- /.navbar-top-links -->
+                <div class="navbar-default sidebar" role="navigation">
+                    <div class="sidebar-nav navbar-collapse">
+                        <ul class="nav" id="side-menu">
+                            <li class="sidebar-search">
+                                <div class="input-group custom-search-form">
+                                    <input type="text" class="form-control" placeholder="Search...">
+                                    <span class="input-group-btn">
+                                <button class="btn btn-default" type="button">
+                                    <i class="fa fa-search"></i>
+                                </button>
+                            </span>
+                                </div>
+                                <!-- /input-group -->
+                            </li>
+                            <li>
+                                <a href="../"><i class="fa fa-home fa-fw"></i>Dashboard</a>
+                            </li>
+                            {% if is_granted(expression('"ROLE_ADMIN" in roles ')) %}
+                                <li>
+                                    <a href="../addTeam"><i class="fa fa-pencil"></i> Add new Team</a>
+                                </li>
+                                <li>
+                                    <a href="../addFreeDays"><i class="fa fa-amazon"></i> Add free dates</a>
+                                </li>
+                            {% endif %}
+                            {% if is_granted(expression('"ROLE_USER" in roles ')) %}
+                                <li>
+                                    <a href="../myteam"><i class="fa fa-dashboard fa-fw"></i> My Team</a>
+                                </li>
+                            {% endif %}
+                            <li>
+                                <a href="#"><i class="fa fa-files-o fa-fw"></i> Sample Pages<span
+                                            class="fa arrow"></span></a>
+                                <ul class="nav nav-second-level">
+                                    <li>
+                                        <a href="../blank">Blank Page</a>
+                                    </li>
+                                    <li>
+                                        <a href="../blank">Blank Page</a>
+                                    </li>
+                                </ul>
+                                <!-- /.nav-second-level -->
+                            </li>
+                        </ul>
+                    </div>
+                    <!-- /.sidebar-collapse -->
+                </div>
+                <!-- /.navbar-static-side -->
+            </nav>
+
+        {% endblock %}
+    {% endblock %}
+
+{% block content %}
+{% endblock %}
+{% block footer %}
+    <footer>
+        <div class="row">
+            <div class="col-lg-12">
+                <p>Copyright &copy; Your Website 2017</p>
+            </div>
+        </div>
+    </footer>
+{% endblock %}
+{% block javascripts %}
+    <script src="{{ asset('build/manifest.js') }}"></script>
+    <script src="{{ asset('build/vendor.js') }}"></script>
+    <script src="{{ asset('build/app.js') }}"></script>
+{% endblock %}

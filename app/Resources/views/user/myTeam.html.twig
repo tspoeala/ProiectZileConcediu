@@ -1,0 +1,148 @@
+{% extends 'layout/layout.html.twig' %}
+
+{% block content %}
+    <div id="page-wrapper" style=" min-height: 1043px;">
+        <div class="row">
+            <div class="col-lg-12">
+                <h1 class="page-header">{{ app.user.team|capitalize }} team</h1>
+            </div>
+            <!-- /.col-lg-12 -->
+        </div>
+        <!-- /.row -->
+        <div class="row">
+            <div class="panel panel-primary">
+                <div class="panel-heading">
+                    <div id='calendar'></div>
+                </div>
+                <div class="panel-footer">
+                </div>
+            </div>
+        </div>
+        <!-- /.row -->
+        {% if is_granted(expression('"ROLE_USER" in roles ')) %}
+            <div class="row">
+                <div class="col-lg-8">
+                    <!-- /.panel -->
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <i class="fa fa-bell fa-fw"></i> My Team
+                        </div>
+                        <div class="panel-body">
+                            <div class="row">
+                                <div class="table-responsive">
+                                    <table class="table table-bordered table-hover table-striped">
+                                        <thead>
+                                        <tr>
+                                            <th>#</th>
+                                            <th>Firstname</th>
+                                            <th>Lastname</th>
+                                            <th>Username</th>
+                                            <th>Email</th>
+                                            <th>Action</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        {% for userFromTeam in usersFromTeam %}
+                                            <tr>
+                                                <td>{{ userFromTeam.id }}</td>
+                                                <td>{{ userFromTeam.firstname }}</td>
+                                                <td>{{ userFromTeam.lastname }}</td>
+                                                <td>{{ userFromTeam.username }}</td>
+                                                <td>{{ userFromTeam.email }}</td>
+                                                <td>
+                                                    <i type="button" data-id="{{ userFromTeam.id }}"
+                                                       class="btn btn-sm btn-success btn-view-modal fa fa-eye">
+                                                    </i>
+                                                    <i type="button" data-id="{{ userFromTeam.id }}"
+                                                       class="btn btn-sm btn-warning btn-edit-modal fa fa-pencil">
+                                                    </i>
+                                                </td>
+                                            </tr>
+                                        {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            <!-- /.row -->
+                        </div>
+                        <!-- /.panel-body -->
+                    </div>
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <i class="fa fa-clock-o fa-fw"></i> Your Days Off
+                        </div>
+                        <!-- /.panel-heading -->
+                        <div class="panel-body">
+                            <div class="table-responsive">
+                                <table class="table table-bordered table-hover table-striped">
+                                    <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>DateStart</th>
+                                        <th>DateEnd</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    {% for dayOffFromUser in daysOffFromUser %}
+                                        <tr>
+                                            <td>{{ dayOffFromUser['id'] }}</td>
+                                            <td>{{ dayOffFromUser['dayStart'] }}</td>
+                                            <td>{{ dayOffFromUser['dayEnd'] }}</td>
+                                        </tr>
+                                    {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <!-- /.panel-body -->
+                    </div>
+                </div>
+                <!-- /.col-lg-8 -->
+                <div class="col-lg-4">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <i class="fa fa-bell fa-fw"></i> Add Days Off
+                        </div>
+                        <!-- /.panel-heading -->
+                        <div class="panel-body">
+
+                            <form method="post">
+                                <div class="form-group">
+                                    <div class="col-md-7">
+                                        <input type="text" name="daterange" id="daterange"
+                                               style="width: 175px;height: 40px;"/>
+
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <div class="col-md-3">
+                                        <button type="submit" class="btn btn-primary btn-block btn-lg">Save
+                                        </button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                        <!-- /.panel-body -->
+                    </div>
+
+
+                </div>
+                <!-- /.col-lg-4 -->
+            </div>
+        {% endif %}
+        <!-- /.row -->
+    </div>
+    <!-- /#page-wrapper -->
+
+{% endblock %}
+
+    {% block javascripts %}
+        {{ parent() }}
+        <script>
+            var array = '{{ freeAndDayOff|raw }}';
+            var freeAndDaysOff = '{{ freeAndDaysOffForFullCalendar|raw }}';
+
+        </script>
+        <script type="text/javascript" src="{{ asset('build/dayOff.js') }}"></script>
+
+    {% endblock %}

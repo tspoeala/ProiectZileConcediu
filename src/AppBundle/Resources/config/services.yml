@@ -1,0 +1,4 @@
+parameters:
+#    admin_campaigns.example.class: Admin\CampaignsBundle\Example
+
+services:

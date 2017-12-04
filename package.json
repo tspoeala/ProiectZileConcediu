@@ -1,0 +1,27 @@
+{
+  "devDependencies": {
+    "@symfony/webpack-encore": "^0.12.0",
+    "bootstrap-sass": "^3.3.7",
+    "font-awesome": "^4.7.0",
+    "jquery": "^3.2.1",
+    "node-sass": "^4.5.3",
+    "sass-loader": "^6.0.5",
+    "typeahead.js": "^0.11.1"
+  },
+  "license": "UNLICENSED",
+  "private": true,
+  "scripts": {
+    "dev-server": "encore dev-server",
+    "dev": "encore dev",
+    "watch": "encore dev --watch",
+    "build": "encore production"
+  },
+  "dependencies": {
+    "bootstrap-calendar": "^0.2.4",
+    "bootstrap-datepicker": "^1.7.1",
+    "bootstrap-datetimepicker": "0.0.7",
+    "daterangepicker": "^2.1.25",
+    "fullcalendar": "^3.7.0",
+    "moment-timezone": "^0.5.14"
+  }
+}

@@ -1,0 +1,78 @@
+# Learn more about services, parameters and containers at
+# https://symfony.com/doc/current/service_container.html
+parameters:
+    #parameter_name: value
+
+services:
+    user_controller:
+        class: AppBundle\Controller\UserController
+#    app.contains_alphanumeric_validator:
+#        class: AppBundle\Validator\Constraints\ContainsAlphanumericValidator
+#    validator.contains.alphanumeric:
+#        class: AppBundle\Validator\Constraints\ContainsAlphanumericValidator
+#        arguments: ['@doctrine']
+#        tags:
+#             - { name: 'validator.contains_alphanumeric', alias: 'validator.contains.alphanumeric' }
+
+    # default configuration for services in *this* file
+    _defaults:
+        # automatically injects dependencies in your services
+        autowire: true
+        # automatically registers your services as commands, event subscribers, etc.
+        autoconfigure: true
+        # this means you cannot fetch services directly from the container via $container->get()
+        # if you need to do this, you can override this setting on individual services
+        public: false
+
+    # makes classes in src/AppBundle available to be used as services
+    # this creates a service per class whose id is the fully-qualified class name
+    AppBundle\:
+        resource: '../../src/AppBundle/*'
+        # you can exclude directories or files
+        # but if a service is unused, it's removed anyway
+        exclude: '../../src/AppBundle/{Entity,Repository,Tests}'
+
+    # controllers are imported separately to make sure they're public
+    # and have a tag that allows actions to type-hint services
+    AppBundle\Controller\:
+        resource: '../../src/AppBundle/Controller'
+        public: true
+        tags: ['controller.service_arguments']
+
+    # add more services, or override services that need manual wiring
+    # AppBundle\Service\ExampleService:
+    #     arguments:
+    #         $someArgument: 'some_value'
+
+    AppBundle\Repository\TeamRepository:
+        class: AppBundle\Repository\TeamRepository
+        arguments:
+            $entityClass: AppBundle\Entity\Team
+    AppBundle\Repository\FreeDaysRepository:
+        class: AppBundle\Repository\FreeDaysRepository
+        arguments:
+            $entityClass: AppBundle\Entity\FreeDays
+    AppBundle\Repository\UserRepository:
+        class: AppBundle\Repository\UserRepository
+        arguments:
+            $entityClass: AppBundle\Entity\User
+    AppBundle\Repository\DayOffRepository:
+        class: AppBundle\Repository\DayOffRepository
+        arguments:
+            $entityClass: AppBundle\Entity\DayOff
+
+    myservice:
+        class: AppBundle\Service\MyService
+        arguments:
+              - '@AppBundle\Repository\UserRepository'
+              - '@AppBundle\Repository\DayOffRepository'
+              - '@AppBundle\Repository\FreeDaysRepository'
+    AppBundle\Controller\UserController:
+        class: AppBundle\Controller\UserController
+        arguments:
+              - '@myservice'
+
+    AppBundle\Controller\AdminController:
+        class: AppBundle\Controller\AdminController
+        arguments:
+              - '@myservice'

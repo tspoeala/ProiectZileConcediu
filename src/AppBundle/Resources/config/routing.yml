@@ -1,0 +1,38 @@
+home:
+  path:     /
+  defaults: { _controller: AppBundle:User:index}
+
+blank:
+  path: /blank
+  defaults: { _controller: AppBundle:Default:blank}
+
+registration:
+  path: /register
+  defaults: {_controller: AppBundle:Auth:registration}
+
+login:
+  path: /login
+  defaults: {_controller: AppBundle:Auth:login}
+
+logout:
+  path: /logout
+
+addTeam:
+  path: /addTeam
+  defaults: {_controller: AppBundle:Admin:addTeam}
+
+freeDays:
+  path: /addFreeDays
+  defaults: {_controller: AppBundle:Admin:addFreeDays}
+  methods: GET
+
+addFreeDays:
+  path: /addFreeDays
+  defaults: {_controller: AppBundle:Admin:addFreeDays}
+  methods: POST
+
+team:
+  path: /myteam
+  defaults: {_controller: AppBundle:User:myTeam}
+
+

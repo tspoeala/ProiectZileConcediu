@@ -7,7 +7,7 @@
         {% block navbar %}
             <!-- Navigation -->
             <nav class="navbar navbar-default navbar-static-top" role="navigation" style="margin-bottom: 0">
-                <div class="navbar-header">
+                <div class="navbar-header toggled">
                     <button type="button" class="navbar-toggle" data-toggle="collapse"
                             data-target=".navbar-collapse">
                         <span class="sr-only">Toggle navigation</span>
@@ -15,7 +15,7 @@
                         <span class="icon-bar"></span>
                         <span class="icon-bar"></span>
                     </button>
-                    <a class="navbar-brand" href="../vacationDays/index.html.twig">SB Admin v2.0</a>
+                    <a class="navbar-brand" href="#">SB Admin v2.0</a>
                 </div>
                 <!-- /.navbar-header -->
 
@@ -37,52 +37,51 @@
                     {% endif %}
                 </ul>
                 <!-- /.navbar-top-links -->
-                <div class="navbar-default sidebar" role="navigation">
-                    <div class="sidebar-nav navbar-collapse">
-                        <ul class="nav" id="side-menu">
-                            <li class="sidebar-search">
-                                <div class="input-group custom-search-form">
-                                    <input type="text" class="form-control" placeholder="Search...">
-                                    <span class="input-group-btn">
+                <div id="wrapper" class="toggled">
+                    <div class="navbar-default sidebar" role="navigation">
+                        <div class="sidebar-nav navbar-collapse">
+                            <ul class="nav" id="side-menu">
+                                <li class="sidebar-search">
+                                    <div class="input-group custom-search-form">
+                                        <input type="text" class="form-control" placeholder="Search...">
+                                        <span class="input-group-btn">
                                 <button class="btn btn-default" type="button">
                                     <i class="fa fa-search"></i>
                                 </button>
                             </span>
-                                </div>
-                                <!-- /input-group -->
-                            </li>
-                            <li>
-                                <a href="../"><i class="fa fa-home fa-fw"></i>Dashboard</a>
-                            </li>
-                            {% if is_granted(expression('"ROLE_ADMIN" in roles ')) %}
-                                <li>
-                                    <a href="../addTeam"><i class="fa fa-pencil"></i> Add new Team</a>
+                                    </div>
+                                    <!-- /input-group -->
                                 </li>
                                 <li>
-                                    <a href="../addFreeDays"><i class="fa fa-amazon"></i> Add free dates</a>
+                                    <a href="../"><i class="fa fa-home fa-fw"></i>Dashboard</a>
                                 </li>
-                            {% endif %}
-                            {% if is_granted(expression('"ROLE_USER" in roles ')) %}
-                                <li>
-                                    <a href="../myteam"><i class="fa fa-dashboard fa-fw"></i> My Team</a>
-                                </li>
-                            {% endif %}
-                            <li>
-                                <a href="#"><i class="fa fa-files-o fa-fw"></i> Sample Pages<span
-                                            class="fa arrow"></span></a>
-                                <ul class="nav nav-second-level">
+                                {% if is_granted(expression('"ROLE_ADMIN" in roles ')) %}
                                     <li>
-                                        <a href="../blank">Blank Page</a>
+                                        <a href="../addTeam"><i class="fa fa-pencil"></i> Add new Team</a>
                                     </li>
                                     <li>
-                                        <a href="../blank">Blank Page</a>
+                                        <a href="../addFreeDays"><i class="fa fa-amazon"></i> Add free dates</a>
                                     </li>
-                                </ul>
-                                <!-- /.nav-second-level -->
-                            </li>
-                        </ul>
+                                {% endif %}
+                                {% if is_granted(expression('"ROLE_USER" in roles ')) %}
+                                    <li>
+                                        <a href="../myteam"><i class="fa fa-dashboard fa-fw"></i> My Team</a>
+                                    </li>
+                                {% endif %}
+                                <li>
+                                    <a href="#"><i class="fa fa-files-o fa-fw"></i> Sample Pages<span
+                                                class="fa arrow"></span></a>
+                                    <ul class="nav nav-second-level">
+                                        <li>
+                                            <a href="../blank">Blank Page</a>
+                                        </li>
+                                    </ul>
+                                    <!-- /.nav-second-level -->
+                                </li>
+                            </ul>
+                        </div>
+                        <!-- /.sidebar-collapse -->
                     </div>
-                    <!-- /.sidebar-collapse -->
                 </div>
                 <!-- /.navbar-static-side -->
             </nav>

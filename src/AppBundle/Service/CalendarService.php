@@ -12,59 +12,78 @@ use DateInterval;
 use DatePeriod;
 use DateTime;
 
-class MyService
+class CalendarService
 {
     private $userRepository;
     private $daysOffRepository;
     private $freeDaysRepository;
+    private $userManager;
 
     public function __construct(
         UserRepository $userRepository,
         DayOffRepository $daysOffRepository,
-        FreeDaysRepository $freeDaysRepository
+        FreeDaysRepository $freeDaysRepository,
+        UserManager $userManager
     ) {
         $this->userRepository = $userRepository;
         $this->daysOffRepository = $daysOffRepository;
         $this->freeDaysRepository = $freeDaysRepository;
-    }
-
-    public function getUsersByTeam($userTeam)
-    {
-        return $this->userRepository->findUserWhereField('team', $userTeam);
+        $this->userManager = $userManager;
     }
 
     public function getDaysOffForFullCalendar($userLogged)
     {
-        if ($userLogged !== 'anon.') {
-            /**
-             * @var User $userLogged
-             */
-            $users = $this->getUsersByTeam($userLogged->getTeam());
-        } else {
-            $users = $this->userRepository->getAllUsers();
+        /**
+         * @var User $userLogged
+         */
+        if ($userLogged !== null) {
+            $users = $this->userManager->getUsersByTeam($userLogged->getTeam());
+
+            return $this->getDaysOffForUsers($users);
+        }
+        $users = $this->userRepository->getAllUsers();
+
+        return $this->getDaysOffForUsers($users);
+    }
+
+    public function generateRandomColor()
+    {
+//        $color = '#';
+//        $colorHexLighter = ["9", "A", "B", "C", "D", "E", "F"];
+//        for ($x = 0; $x < 6; $x++):
+//            $color .= $colorHexLighter[array_rand($colorHexLighter, 1)];
+//        endfor;
+//
+//        return substr($color, 0, 7);
+        $randomcolor = '#' . strtoupper(dechex(rand(0, 10000000)));
+        if (strlen($randomcolor) != 7) {
+            $randomcolor = str_pad($randomcolor, 10, '0', STR_PAD_RIGHT);
+            $randomcolor = substr($randomcolor, 0, 7);
         }
 
+        return $randomcolor;
+    }
+
+    public function getDaysOffForUsers($users)
+    {
         $daysOffFormatted = [];
+        $usersWithDaysOff = [];
         /**
          * @var User   $user
          * @var DayOff $dayOff
          */
-        foreach ($users as $key1 => $user) {
-            foreach ($user->getDaysOff() as $key => $dayOff) {
+        foreach ($users as $keyUser => $user) {
+            foreach ($user->getDaysOff() as $keyDayOff => $dayOff) {
 
-                $users[$user->getUsername()][] = $dayOff->getDateStart()->format('Y-m-d') . ' ' . $dayOff->getDateEnd()->format('Y-m-d');
-                $daysOffFormatted[$key1][$key]['start'] = $dayOff->getDateStart()->format('Y-m-d');
-                $daysOffFormatted[$key1][$key]['end'] = $dayOff->getDateEnd()->modify('+1 day')->format('Y-m-d');
-                $daysOffFormatted[$key1][$key]['title'] = 'Concediu de odihna ' . $user->getFirstname() . ' ' . $user->getLastname();
+                $daysOffFormatted[$keyUser][$keyDayOff]['start'] = $dayOff->getDateStart()->format('Y-m-d');
+                $daysOffFormatted[$keyUser][$keyDayOff]['end'] = $dayOff->getDateEnd()->modify('+1 day')->format('Y-m-d');
+                $daysOffFormatted[$keyUser][$keyDayOff]['title'] = 'Concediu de odihna ' . $user->getFirstname() . ' ' . $user->getLastname();
+                $usersWithDaysOff[$user->getUsername()]['daysOff'] = $daysOffFormatted[$keyUser];
+                $usersWithDaysOff[$user->getUsername()]['color'] = $this->generateRandomColor();
             }
         }
 
-        $daysOff = [];
-        foreach ($daysOffFormatted as $key => $dayOffFormatted) {
-            $daysOff = array_merge($daysOff, $daysOffFormatted[$key]);
-        }
-
-        return $daysOff;
+        return $usersWithDaysOff;
     }
 
     public function getFreeDaysForFullCalendar()
@@ -111,7 +130,7 @@ class MyService
 
         $begin = new DateTime($begin);
 
-        $end = new DateTime($end . ' +1 day');
+        $end = new DateTime($end . ' + 1 day');
 
         $daterange = new DatePeriod($begin, new DateInterval('P1D'), $end);
         $dates = [];
@@ -153,7 +172,7 @@ class MyService
 
     public function saveDateOff($user, $daysOff)
     {
-        $daysOffStartEnd = explode('-', $daysOff);
+        $daysOffStartEnd = explode(' - ', $daysOff);
         if (count($daysOffStartEnd) == 2) {
             $dateStart = new DateTime($daysOffStartEnd[0]);
             $dateEnd = new DateTime($daysOffStartEnd[1]);

@@ -10,12 +10,10 @@
         </div>
         <!-- /.row -->
         <div class="row">
-            <div class="panel panel-primary">
-                <div class="panel-heading">
-                    <div id='calendar'></div>
-                </div>
-                <div class="panel-footer">
-                </div>
+            <div class="panel-heading">
+                <div id='calendar'></div>
+            </div>
+            <div class="panel-footer">
             </div>
         </div>
         <!-- /.row -->
@@ -140,7 +138,8 @@
         {{ parent() }}
         <script>
             var array = '{{ freeAndDayOff|raw }}';
-            var freeAndDaysOff = '{{ freeAndDaysOffForFullCalendar|raw }}';
+            var freeDays = '{{ freeDays|raw }}';
+            var daysOff = '{{ daysOff|raw }}';
 
         </script>
         <script type="text/javascript" src="{{ asset('build/dayOff.js') }}"></script>

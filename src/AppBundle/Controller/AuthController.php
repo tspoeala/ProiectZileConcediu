@@ -28,7 +28,6 @@ class AuthController extends Controller
             // 4) save the User!
             $em->persist($user);
             $em->flush();
-            $this->addFlash("success", "Congratulation! You can now log in!");
 
             return $this->redirectToRoute('login');
         }

@@ -18,14 +18,14 @@ class UserRepository extends ServiceEntityRepository implements UserLoaderInterf
             ->getResult();
     }
 
-    public function findUserWhereField($field, $value)
+    public function findUserWhereTeam($value)
     {
         return $this->getEntityManager()
             ->createQueryBuilder()
             ->select('u')
             ->from('AppBundle:User', 'u')
-            ->where("u.$field=:$field")
-            ->setParameter("$field", $value)
+            ->where("u.team=:team")
+            ->setParameter('team', $value)
             ->getQuery()
             ->getResult();
     }

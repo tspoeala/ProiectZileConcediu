@@ -5,7 +5,8 @@ import 'daterangepicker';
 import 'fullcalendar';
 
 console.log(array);
-console.log(freeAndDaysOff);
+console.log(freeDays);
+console.log(daysOff);
 $(function () {
     $('input[name="daterange"]').daterangepicker(
         {
@@ -28,15 +29,24 @@ $(function () {
 });
 $(function () {
     $('#calendar').fullCalendar({
+
         eventSources: [
-            // your event source
             {
-                events: JSON.parse(freeAndDaysOff),
+                events: JSON.parse(freeDays),
                 color: '#a94442',     // an option!
                 textColor: 'white' // an option!
             },
-
         ],
+
         weekends: false
+    });
+    $.each(JSON.parse(daysOff), function (key, value) {
+        let event = {
+            events: value['daysOff'],
+            color: value['color'],     // an option!
+            textColor: 'white' // an option!
+        };
+
+        $('#calendar').fullCalendar('addEventSource', event);
     });
 });

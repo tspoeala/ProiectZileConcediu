@@ -61,18 +61,36 @@ services:
         arguments:
             $entityClass: AppBundle\Entity\DayOff
 
-    myservice:
-        class: AppBundle\Service\MyService
+    calendarService:
+        class: AppBundle\Service\CalendarService
         arguments:
               - '@AppBundle\Repository\UserRepository'
               - '@AppBundle\Repository\DayOffRepository'
               - '@AppBundle\Repository\FreeDaysRepository'
+              - '@userManager'
+
+    userManager:
+        class: AppBundle\Service\UserManager
+        arguments:
+              - '@AppBundle\Repository\UserRepository'
+
+    mailerService:
+          class: AppBundle\Service\MailerService
+          arguments:
+              - '@swiftmailer.mailer'
+
+    emailCommand:
+          class: AppBundle\Command\EmailCommand
+          arguments:
+              - '@mailerService'
+
     AppBundle\Controller\UserController:
         class: AppBundle\Controller\UserController
         arguments:
-              - '@myservice'
+              - '@calendarService'
+              - '@userManager'
 
     AppBundle\Controller\AdminController:
         class: AppBundle\Controller\AdminController
         arguments:
-              - '@myservice'
+              - '@calendarService'

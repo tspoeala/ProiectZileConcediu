@@ -31,7 +31,7 @@ class CalendarService
         $this->userManager = $userManager;
     }
 
-    public function getDaysOffForFullCalendar($userLogged)
+    public function getDaysOffForFullCalendar($userLogged = null)
     {
         /**
          * @var User $userLogged
@@ -48,20 +48,13 @@ class CalendarService
 
     public function generateRandomColor()
     {
-//        $color = '#';
-//        $colorHexLighter = ["9", "A", "B", "C", "D", "E", "F"];
-//        for ($x = 0; $x < 6; $x++):
-//            $color .= $colorHexLighter[array_rand($colorHexLighter, 1)];
-//        endfor;
-//
-//        return substr($color, 0, 7);
-        $randomcolor = '#' . strtoupper(dechex(rand(0, 10000000)));
-        if (strlen($randomcolor) != 7) {
-            $randomcolor = str_pad($randomcolor, 10, '0', STR_PAD_RIGHT);
-            $randomcolor = substr($randomcolor, 0, 7);
-        }
+        $color = '#';
+        $colorHexLighter = ["9", "A", "B", "C", "A", "B", "8"];
+        for ($x = 0; $x < 6; $x++):
+            $color .= $colorHexLighter[array_rand($colorHexLighter, 1)];
+        endfor;
 
-        return $randomcolor;
+        return substr($color, 0, 7);
     }
 
     public function getDaysOffForUsers($users)
@@ -76,8 +69,10 @@ class CalendarService
             foreach ($user->getDaysOff() as $keyDayOff => $dayOff) {
 
                 $daysOffFormatted[$keyUser][$keyDayOff]['start'] = $dayOff->getDateStart()->format('Y-m-d');
-                $daysOffFormatted[$keyUser][$keyDayOff]['end'] = $dayOff->getDateEnd()->modify('+1 day')->format('Y-m-d');
-                $daysOffFormatted[$keyUser][$keyDayOff]['title'] = 'Concediu de odihna ' . $user->getFirstname() . ' ' . $user->getLastname();
+                $daysOffFormatted[$keyUser][$keyDayOff]['end'] =
+                    $dayOff->getDateEnd()->modify('+1 day')->format('Y-m-d');
+                $daysOffFormatted[$keyUser][$keyDayOff]['title'] =
+                    $dayOff->getType() . ' ' . $user->getFirstname() . ' ' . $user->getLastname();
                 $usersWithDaysOff[$user->getUsername()]['daysOff'] = $daysOffFormatted[$keyUser];
                 $usersWithDaysOff[$user->getUsername()]['color'] = $this->generateRandomColor();
             }
@@ -118,6 +113,7 @@ class CalendarService
                     'id' => $dayOff->getId(),
                     'dayStart' => $dayOff->getDateStart()->format('m/d/Y'),
                     'dayEnd' => $dayOff->getDateEnd()->format('m/d/Y'),
+                    'type' => $dayOff->getType(),
                 ];
             }
         }
@@ -143,11 +139,13 @@ class CalendarService
 
     public function getAllDayOffForUser($daysOffFromUser)
     {
-        //put the day off between dayStart and dayEnd
+        //put the days off between dayStart and dayEnd
         $allDayOff = [];
         foreach ($daysOffFromUser as $dayOffFromUser) {
-            $allDayOff = array_merge($allDayOff,
-                $this->datePeriod_start_end($dayOffFromUser['dayStart'], $dayOffFromUser['dayEnd']));
+            $allDayOff = array_merge(
+                $allDayOff,
+                $this->datePeriod_start_end($dayOffFromUser['dayStart'], $dayOffFromUser['dayEnd'])
+            );
         }
 
         return $allDayOff;
@@ -170,14 +168,14 @@ class CalendarService
         return $freeDaysFormatted;
     }
 
-    public function saveDateOff($user, $daysOff)
+    public function saveDateOff($user, $daysOff, $type)
     {
         $daysOffStartEnd = explode(' - ', $daysOff);
         if (count($daysOffStartEnd) == 2) {
             $dateStart = new DateTime($daysOffStartEnd[0]);
             $dateEnd = new DateTime($daysOffStartEnd[1]);
 
-            $this->daysOffRepository->save($dateStart, $dateEnd, $user);
+            $this->daysOffRepository->save($dateStart, $dateEnd, $user, $type);
         }
     }
 
@@ -187,5 +185,19 @@ class CalendarService
             $date = new DateTime($date);
             $this->freeDaysRepository->save($date, $name);
         }
+    }
+
+    public function limitWorkFromHomeDays($day, $daysOffFromUser)
+    {
+        $nr = 0;
+        foreach ($daysOffFromUser as $dayOff) {
+            if ('WH' === $dayOff['type']) {
+                $nr += round(strtotime($dayOff['dayEnd']) - strtotime($dayOff['dayStart'])) / (60 * 60 * 24) + 1;
+            }
+        }
+        $dayOffStartEnd = explode(' - ', $day);
+        $nr += round(strtotime($dayOffStartEnd[1]) - strtotime($dayOffStartEnd[0])) / (60 * 60 * 24) + 1;
+
+        return $nr;
     }
 }

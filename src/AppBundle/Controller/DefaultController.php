@@ -2,16 +2,25 @@
 
 namespace AppBundle\Controller;
 
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use AppBundle\Service\CalendarService;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-use Symfony\Component\HttpFoundation\Request;
 
 class DefaultController extends Controller
 {
-    public function blankAction()
+    public function indexAction(CalendarService $calendarService)
     {
-        return $this->render('vacationDays/blank.html.twig', [
-            'base_dir' => realpath($this->getParameter('kernel.project_dir')) . DIRECTORY_SEPARATOR,
-        ]);
+        if ($this->isGranted('ROLE_USER') && !$this->isGranted('ROLE_ADMIN')) {
+            return $this->redirectToRoute('account');
+        }
+        $freeDays = $calendarService->getFreeDaysForFullCalendar();
+        $daysOff = $calendarService->getDaysOffForFullCalendar();
+
+        return $this->render(
+            'vacationDays/index.html.twig',
+            [
+                'freeDays' => json_encode($freeDays),
+                'daysOff' => json_encode($daysOff),
+            ]
+        );
     }
 }

@@ -19,7 +19,7 @@ class MailerService
             ->setFrom($this->adminEmail)
             ->setTo($userEmail)
             ->setBody(
-                'Membrul ' . $userName . ' are concediu in perioada ' . $periodOfHoliday . ' '
+                'Membrul ' . $userName . ' are concediu in perioada ' . $periodOfHoliday . ' ', 'text/html'
             );
         $this->mailer->send($message);
     }

@@ -11,13 +11,13 @@
                 <div class="col-xs-12 col-sm-8 col-md-6 col-sm-offset-2 col-md-offset-3">
                     <h2>Add Free Days</h2>
                     <hr class="colorgraph">
-                    <form action="{{ path('addFreeDays') }}" method="post">
+                    <form action="{{ path('add_free_days') }}" method="post">
                         <div class="form-group">
                             <div class='input-group name' id='datetimename' style="width: 455px;">
                                 <input type='text' id="name" class="form-control" name="_name" required placeholder="Name of Free Day"/>
                             </div>
                         </div>
-                        <div class="form-group">
+                        <div class="form-group" style="width: 455px;">
                             <div class='input-group date' id='datetimepicker5'>
                                 <input type='text' id="date" class="form-control" name="_date" required/>
                                 <span class="input-group-addon">

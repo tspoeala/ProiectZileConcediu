@@ -20,6 +20,17 @@
                 <!-- /.navbar-header -->
 
                 <ul class="nav navbar-top-links navbar-right">
+                    {% if is_granted(expression('"ROLE_ADMIN" in roles ')) %}
+                        <li>
+                            <a href="{{ path('add_team') }}"><i class="fa fa-pencil"></i> Add new Team</a>
+                        </li>
+                        <li>
+                            <a href="{{ path('add_free_days') }}"><i class="fa fa-amazon"></i> Add free dates</a>
+                        </li>
+                    {% endif %}
+                    <li>
+                        <a href="/"><i class="fa fa-home fa-fw"></i>Dashboard</a>
+                    </li>
                     {% if is_granted('IS_AUTHENTICATED_FULLY') %}
                         <li>
                             <span>Hello {{ app.user.username }} !</span>
@@ -36,52 +47,33 @@
                         </li>
                     {% endif %}
                 </ul>
-                <!-- /.navbar-top-links -->
-                <div id="wrapper" class="toggled">
-                    <div class="navbar-default sidebar" role="navigation">
-                        <div class="sidebar-nav navbar-collapse">
-                            <ul class="nav" id="side-menu">
-                                <li class="sidebar-search">
-                                    <div class="input-group custom-search-form">
-                                        <input type="text" class="form-control" placeholder="Search...">
-                                        <span class="input-group-btn">
-                                <button class="btn btn-default" type="button">
-                                    <i class="fa fa-search"></i>
-                                </button>
-                            </span>
-                                    </div>
-                                    <!-- /input-group -->
-                                </li>
-                                <li>
-                                    <a href="../"><i class="fa fa-home fa-fw"></i>Dashboard</a>
-                                </li>
-                                {% if is_granted(expression('"ROLE_ADMIN" in roles ')) %}
-                                    <li>
-                                        <a href="../addTeam"><i class="fa fa-pencil"></i> Add new Team</a>
-                                    </li>
-                                    <li>
-                                        <a href="../addFreeDays"><i class="fa fa-amazon"></i> Add free dates</a>
-                                    </li>
-                                {% endif %}
-                                {% if is_granted(expression('"ROLE_USER" in roles ')) %}
-                                    <li>
-                                        <a href="../myteam"><i class="fa fa-dashboard fa-fw"></i> My Team</a>
-                                    </li>
-                                {% endif %}
-                                <li>
-                                    <a href="#"><i class="fa fa-files-o fa-fw"></i> Sample Pages<span
-                                                class="fa arrow"></span></a>
-                                    <ul class="nav nav-second-level">
-                                        <li>
-                                            <a href="../blank">Blank Page</a>
-                                        </li>
-                                    </ul>
-                                    <!-- /.nav-second-level -->
-                                </li>
-                            </ul>
-                        </div>
-                        <!-- /.sidebar-collapse -->
-                    </div>
+                {#<!-- /.navbar-top-links -->#}
+                {#<div id="wrapper" class="toggled">#}
+
+
+                {#<div class="navbar-default sidebar" role="navigation">#}
+                {#<div class="sidebar-nav navbar-collapse" id="sidebar">#}
+                {#<ul class="nav" id="side-menu">#}
+                {#<li>#}
+                {#<a href="/"><i class="fa fa-home fa-fw"></i>Dashboard</a>#}
+                {#</li>#}
+                {#{% if is_granted(expression('"ROLE_ADMIN" in roles ')) %}#}
+                {#<li>#}
+                {#<a href="{{ path('add_team') }}"><i class="fa fa-pencil"></i> Add new#}
+                {#Team</a>#}
+                {#</li>#}
+                {#<li>#}
+                {#<a href="{{ path('add_free_days') }}"><i class="fa fa-amazon"></i> Add#}
+                {#free#}
+                {#dates</a>#}
+                {#</li>#}
+                {#{% endif %}#}
+                {#</ul>#}
+                {#</div>#}
+                {#<!-- /.sidebar-collapse -->#}
+                {#</div>#}
+                {#</div>#}
+                </div>
                 </div>
                 <!-- /.navbar-static-side -->
             </nav>

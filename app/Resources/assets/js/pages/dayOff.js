@@ -7,6 +7,8 @@ import 'fullcalendar';
 console.log(array);
 console.log(freeDays);
 console.log(daysOff);
+var event = [];
+
 $(function () {
     $('input[name="daterange"]').daterangepicker(
         {

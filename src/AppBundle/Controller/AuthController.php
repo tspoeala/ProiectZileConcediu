@@ -25,6 +25,7 @@ class AuthController extends Controller
             $em = $this->getDoctrine()->getManager();
             $password = $passwordEncoder->encodePassword($user, $user->getPlainPassword());
             $user->setPassword($password);
+            //set firstname and lastname ucfirst
             // 4) save the User!
             $em->persist($user);
             $em->flush();

@@ -1,19 +1,19 @@
 {% extends 'layout/layout.html.twig' %}
 
 {% block content %}
-    <div id="page-wrapper" style=" min-height: 1043px;">
-        <div class="row">
-            <div class="col-lg-12">
-                <h1 class="page-header">{{ app.user.team|capitalize }} team</h1>
+    <div id="page-wrapper" style=" min-height: 1043px;" align="center">
+        {% if not is_granted(expression('"ROLE_ADMIN" in roles ')) %}
+            <div class="row">
+                <div class="col-lg-12">
+                    <h1 class="page-header">{{ app.user.team|capitalize }} team</h1>
+                </div>
+                <!-- /.col-lg-12 -->
             </div>
-            <!-- /.col-lg-12 -->
-        </div>
+        {% endif %}
         <!-- /.row -->
         <div class="row">
-            <div class="panel-heading">
+            <div class="panel-heading" style="width: 1100px;">
                 <div id='calendar'></div>
-            </div>
-            <div class="panel-footer">
             </div>
         </div>
         <!-- /.row -->
@@ -36,7 +36,7 @@
                                             <th>Lastname</th>
                                             <th>Username</th>
                                             <th>Email</th>
-                                            <th>Action</th>
+
                                         </tr>
                                         </thead>
                                         <tbody>
@@ -47,14 +47,6 @@
                                                 <td>{{ userFromTeam.lastname }}</td>
                                                 <td>{{ userFromTeam.username }}</td>
                                                 <td>{{ userFromTeam.email }}</td>
-                                                <td>
-                                                    <i type="button" data-id="{{ userFromTeam.id }}"
-                                                       class="btn btn-sm btn-success btn-view-modal fa fa-eye">
-                                                    </i>
-                                                    <i type="button" data-id="{{ userFromTeam.id }}"
-                                                       class="btn btn-sm btn-warning btn-edit-modal fa fa-pencil">
-                                                    </i>
-                                                </td>
                                             </tr>
                                         {% endfor %}
                                         </tbody>
@@ -75,17 +67,25 @@
                                 <table class="table table-bordered table-hover table-striped">
                                     <thead>
                                     <tr>
-                                        <th>#</th>
+                                        <th>Type</th>
                                         <th>DateStart</th>
                                         <th>DateEnd</th>
+                                        <th>Actions</th>
                                     </tr>
                                     </thead>
                                     <tbody>
                                     {% for dayOffFromUser in daysOffFromUser %}
-                                        <tr>
-                                            <td>{{ dayOffFromUser['id'] }}</td>
+                                        <tr data-id="{{ dayOffFromUser.id }}">
+                                            <td>{{ dayOffFromUser['type'] }}</td>
                                             <td>{{ dayOffFromUser['dayStart'] }}</td>
                                             <td>{{ dayOffFromUser['dayEnd'] }}</td>
+                                            <td>
+                                                <a href="/deleteDayOff/{{ dayOffFromUser.id }}">
+                                                    <i type="button" data-id=""
+                                                       class="btn btn-sm btn-success btn-danger">Delete
+                                                    </i>
+                                                </a>
+                                            </td>
                                         </tr>
                                     {% endfor %}
                                     </tbody>
@@ -101,20 +101,30 @@
                         <div class="panel-heading">
                             <i class="fa fa-bell fa-fw"></i> Add Days Off
                         </div>
+                    </div>
+                    <div class="panel panel-default">
                         <!-- /.panel-heading -->
                         <div class="panel-body">
+                            {% for message in app.flashes('warning') %}
+                                <div class="alert alert-warning">
+                                    {{ message }}
+                                </div>
+                            {% endfor %}
 
                             <form method="post">
                                 <div class="form-group">
-                                    <div class="col-md-7">
-                                        <input type="text" name="daterange" id="daterange"
-                                               style="width: 175px;height: 40px;"/>
-
+                                    <div class="col-md-8">
+                                        <select id="type" name="type" required="required" class="form-control btn-md">
+                                            <option value="CO" selected="selected">Concediu de odihna</option>
+                                            <option value="WH">Work from home</option>
+                                        </select>
                                     </div>
                                 </div>
                                 <div class="form-group">
-                                    <div class="col-md-3">
-                                        <button type="submit" class="btn btn-primary btn-block btn-lg">Save
+                                    <div class="col-md-6">
+                                        <input type="text" name="daterange" id="daterange"
+                                               style="width: 175px;height: 40px; margin-top: 5px;"/>
+                                        <button type="submit" class="btn btn-primary">Save
                                         </button>
                                     </div>
                                 </div>

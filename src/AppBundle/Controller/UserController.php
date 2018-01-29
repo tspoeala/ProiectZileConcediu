@@ -3,71 +3,99 @@
 namespace AppBundle\Controller;
 
 use AppBundle\Entity\User;
+use AppBundle\Repository\DayOffRepository;
 use AppBundle\Service\CalendarService;
 use AppBundle\Service\MailerService;
 use AppBundle\Service\UserManager;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\Routing\RouterInterface;
 
 class UserController extends Controller
 {
     private $myService;
-    private $router;
     private $userManager;
+    private $dayOffRepository;
+    const MAX_WH_DAYS = 2;
 
-    public function __construct(CalendarService $myService, UserManager $userManager, RouterInterface $router)
-    {
+    public function __construct(
+        CalendarService $myService,
+        UserManager $userManager,
+        DayOffRepository $dayOffRepository
+    ) {
         $this->myService = $myService;
-        $this->router = $router;
         $this->userManager = $userManager;
+        $this->dayOffRepository = $dayOffRepository;
     }
 
-    public function indexAction()
+    public function deleteDayOffAction($id)
     {
-        $userLogged = $this->getUser();
-        $freeDays = $this->myService->getFreeDaysForFullCalendar();
-        $daysOff = $this->myService->getDaysOffForFullCalendar($userLogged);
+        $this->dayOffRepository->deleteDayOffWhereId($id);
 
-        return $this->render('vacationDays/index.html.twig', [
-            'freeDays' => json_encode($freeDays),
-            'daysOff' => json_encode($daysOff),
-        ]);
+        return $this->redirectToRoute('account');
     }
 
     public function myTeamAction(Request $request)
     {
-        /**
-         * @var User $user
-         */
+        $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
+        /** @var User $user */
         $user = $this->getUser();
-        $daysOff = $request->request->get('daterange');
-        if ($request->isMethod('POST')) {
-            $this->myService->saveDateOff($user, $daysOff);
-
-            return new RedirectResponse($this->router->generate('team'));
-//            $this->redirectToRoute('team');
+        if ($this->isGranted('ROLE_ADMIN')) {
+            $user = null;
         }
-        $usersFromTeam = $this->userManager->getUsersByTeam($user->getTeam());
-        $daysOffFromUser = $this->myService->getDaysOffByUserId($user->getId());
-        $freeDays = $this->myService->getFreeDaysForFullCalendar();
-        $daysOff = $this->myService->getDaysOffForFullCalendar($user);
-        $freeAndDayOff = array_merge($this->myService->getAllDayOffForUser($daysOffFromUser),
-            $this->myService->getFreeDays());
 
-        return $this->render('user/myTeam.html.twig', [
-            'usersFromTeam' => $usersFromTeam,
-            'freeAndDayOff' => json_encode($freeAndDayOff),
-            'freeDays' => json_encode($freeDays),
-            'daysOff' => json_encode($daysOff),
-            'daysOffFromUser' => $daysOffFromUser,
-        ]);
+        $daysOffFromUser = $this->getInfo($user)['daysOffFromUser'];
+        $daysOffRequest = $request->request->get('daterange');
+        $type = $request->request->get('type');
+        if ($request->isMethod('POST')) {
+            if ($type === 'WH'
+                && $this->myService->limitWorkFromHomeDays($daysOffRequest, $daysOffFromUser) >= self::MAX_WH_DAYS
+            ) {
+                $this->addFlash(
+                    'warning',
+                    'You are only entitled to ' . self::MAX_WH_DAYS . ' days of work from home per month.'
+                );
+
+                return $this->redirectToRoute('account');
+            }
+            $this->myService->saveDateOff($user, $daysOffRequest, $type);
+
+            return $this->redirectToRoute('account');
+        }
+        $freeDays = $this->myService->getFreeDaysForFullCalendar();
+
+        $freeAndDayOff = array_merge(
+            $this->myService->getAllDayOffForUser($daysOffFromUser),
+            $this->myService->getFreeDays()
+        );
+
+        return $this->render(
+            'user/myTeam.html.twig',
+            [
+                'usersFromTeam' => $this->getInfo($user)['usersFromTeam'],
+                'user' => $user,
+                'freeAndDayOff' => json_encode($freeAndDayOff),
+                'freeDays' => json_encode($freeDays),
+                'daysOff' => json_encode($this->getInfo($user)['daysOff']),
+                'daysOffFromUser' => $daysOffFromUser,
+            ]
+        );
     }
 
-    public function sendNewEmail(MailerService $mailerService)
-    {
+    public function sendNewEmailAction(
+        MailerService $mailerService
+    ) {
         $user = $this->getUser();
-        $mailerService->sendMessageToTeamMembers($user);
+        $mailerService->sendMessageToTeamMembers('andreea_spoeala@yahoo.com', 'ana', '2');
+
+        return $this->redirectToRoute('home');
+    }
+
+    private function getInfo(User $user)
+    {
+        return [
+            'daysOffFromUser' => $this->myService->getDaysOffByUserId($user->getId()),
+            'usersFromTeam' => $this->userManager->getUsersByTeam($user->getTeam()),
+            'daysOff' => $this->myService->getDaysOffForFullCalendar($user),
+        ];
     }
 }

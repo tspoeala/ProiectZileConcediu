@@ -7,12 +7,13 @@ use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 
 class DayOffRepository extends ServiceEntityRepository
 {
-    public function save($dateStart, $dateEnd, $userId)
+    public function save($dateStart, $dateEnd, $userId, $type)
     {
         $dayOff = new DayOff();
         $dayOff->setDateStart($dateStart);
         $dayOff->setDateEnd($dateEnd);
         $dayOff->setUser($userId);
+        $dayOff->setType($type);
         $this->getEntityManager()->persist($dayOff);
         $this->getEntityManager()->flush();
     }
@@ -37,6 +38,29 @@ class DayOffRepository extends ServiceEntityRepository
             ->from('AppBundle:DayOff', 'do')
             ->where("do.$field=:$field")
             ->setParameter("$field", $value)
+            ->getQuery()
+            ->getResult();
+    }
+
+    public function findDayOff($field, $value)
+    {
+        return $this->getEntityManager()
+            ->createQueryBuilder()
+            ->select('do')
+            ->from('AppBundle:DayOff', 'do')
+            ->where("do.$field=:$field")
+            ->setParameter("$field", $value)
+            ->getQuery()
+            ->getResult();
+    }
+
+    public function deleteDayOffWhereId($id)
+    {
+        return $this->getEntityManager()
+            ->createQueryBuilder()
+            ->delete('AppBundle:DayOff', 'do')
+            ->where('do.id=?1')
+            ->setParameter(1, $id)
             ->getQuery()
             ->getResult();
     }

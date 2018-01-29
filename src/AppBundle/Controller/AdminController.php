@@ -33,7 +33,7 @@ class AdminController extends Controller
             $em->flush();
             $this->addFlash("success", "Congratulation! You add a new team!");
 
-            return new RedirectResponse($this->router->generate('addTeam'));
+            return new RedirectResponse($this->router->generate('add_team'));
         }
 
         return $this->render(
@@ -49,7 +49,7 @@ class AdminController extends Controller
         if ($request->isMethod('POST')) {
             $this->myService->saveFreeDay($date, $name);
 
-            return new RedirectResponse($this->router->generate('addFreeDays'));
+            return new RedirectResponse($this->router->generate('add_free_days'));
         }
         $freeDays = $this->myService->getFreeDays();
 
@@ -66,9 +66,8 @@ class AdminController extends Controller
             ->setTo('andreea_spoeala@yahoo.com')
             ->setBody(
                 $this->renderView(
-                // app/Resources/views/Emails/registration.html.twig
-                    'emails/exampleEmail.html.twig',
-                    ['name' => 'Teodora']
+                    'emails/exampleEmail.html.twig'
+//                    ['name' => 'Teodora']
                 ),
                 'text/html'
             )/*

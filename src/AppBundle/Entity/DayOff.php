@@ -37,6 +37,10 @@ class DayOff
     private $user;
 
     /**
+     * @ORM\Column(name="type", type="string", length=50)
+     */
+    private $type;
+    /**
      * Get id
      *
      * @return int
@@ -112,6 +116,31 @@ class DayOff
     public function getDateEnd()
     {
         return $this->dateEnd;
+    }
+
+    /**
+     * Set type
+     *
+     * @param string $type
+     *
+     * @return DayOff
+     */
+    public function setType($type)
+    {
+        $this->type = $type;
+
+        return $this;
+    }
+
+    /**
+     * Get type
+     *
+     * @return string
+     */
+
+    public function getType()
+    {
+        return $this->type;
     }
 }
 

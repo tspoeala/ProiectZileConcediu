@@ -10,6 +10,7 @@ $(function () {
                              datesDisabled: JSON.parse(array),
                              daysOfWeekDisabled: '06',
                              todayHighlight: true,
+                             minDate: 0
 
 
                          })

@@ -62,6 +62,7 @@ doctrine:
 
 # Swiftmailer Configuration
 swiftmailer:
+    delivery_address: ['andreeateo554@gmail.com']
     transport: '%mailer_transport%'
     host: '%mailer_host%'
     username: '%mailer_user%'

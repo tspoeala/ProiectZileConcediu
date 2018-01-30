@@ -14,7 +14,8 @@
                     <form action="{{ path('add_free_days') }}" method="post">
                         <div class="form-group">
                             <div class='input-group name' id='datetimename' style="width: 455px;">
-                                <input type='text' id="name" class="form-control" name="_name" required placeholder="Name of Free Day"/>
+                                <input type='text' id="name" class="form-control" name="_name" required
+                                       placeholder="Name of Free Day"/>
                             </div>
                         </div>
                         <div class="form-group" style="width: 455px;">
@@ -33,6 +34,36 @@
                             </div>
                         </div>
                     </form>
+                    <div class="panel-body">
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-hover table-striped">
+                                <thead>
+                                <tr>
+
+                                    <th>Name</th>
+                                    <th>Date</th>
+                                    <th>Actions</th>
+
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {% for freeDay in freeDaysAll %}
+                                    <tr>
+                                        <td>{{ freeDay['title'] }}</td>
+                                        <td>{{ freeDay['start'] }}</td>
+                                        <td>
+                                            <a href="/deleteFreeDay/">
+                                                <i type="button" data-id=""
+                                                   class="btn btn-sm btn-success btn-danger">Delete
+                                                </i>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

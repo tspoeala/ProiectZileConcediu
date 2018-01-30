@@ -39,20 +39,20 @@ class UserController extends Controller
         $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
         /** @var User $user */
         $user = $this->getUser();
-        if ($this->isGranted('ROLE_ADMIN')) {
-            $user = null;
-        }
+        //        if ($this->isGranted('ROLE_ADMIN')) {
+        //            $user = null;
+        //        }
 
         $daysOffFromUser = $this->getInfo($user)['daysOffFromUser'];
         $daysOffRequest = $request->request->get('daterange');
         $type = $request->request->get('type');
         if ($request->isMethod('POST')) {
             if ($type === 'WH'
-                && $this->myService->limitWorkFromHomeDays($daysOffRequest, $daysOffFromUser) >= self::MAX_WH_DAYS
+                && $this->myService->limitWorkFromHomeDays($daysOffRequest, $daysOffFromUser) > self::MAX_WH_DAYS
             ) {
                 $this->addFlash(
                     'warning',
-                    'You are only entitled to ' . self::MAX_WH_DAYS . ' days of work from home per month.'
+                    'You have the right at ' . self::MAX_WH_DAYS . ' days of work from home per month.'
                 );
 
                 return $this->redirectToRoute('account');

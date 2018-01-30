@@ -55,7 +55,10 @@ class AdminController extends Controller
 
         return $this->render(
             'admin/addFreeDays.html.twig',
-            ['freeDays' => json_encode($freeDays)]
+            [
+                'freeDays' => json_encode($freeDays),
+                'freeDaysAll' => $this->myService->getFreeDaysForFullCalendar(),
+            ]
         );
     }
 
@@ -67,7 +70,7 @@ class AdminController extends Controller
             ->setBody(
                 $this->renderView(
                     'emails/exampleEmail.html.twig'
-//                    ['name' => 'Teodora']
+                //                    ['name' => 'Teodora']
                 ),
                 'text/html'
             )/*

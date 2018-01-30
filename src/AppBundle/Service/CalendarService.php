@@ -190,14 +190,67 @@ class CalendarService
     public function limitWorkFromHomeDays($day, $daysOffFromUser)
     {
         $nr = 0;
+        $dayOffStartEnd = explode(' - ', $day);
+        $monthOfStartDay = explode('/', $dayOffStartEnd [0])[0];
+        $monthOfEndDay = explode('/', $dayOffStartEnd [1])[0];
+        if ($monthOfEndDay === $monthOfStartDay) {
+            //$nr += round(strtotime($dayOffStartEnd[1]) - strtotime($dayOffStartEnd[0])) / (60 * 60 * 24) + 1;
+
+            $nr += $this->eliminateWeekendsDays($dayOffStartEnd[0], $dayOffStartEnd[1]);
+            foreach ($daysOffFromUser as $dayOff) {
+                if ('WH' === $dayOff['type']
+                    && ($monthOfStartDay == explode('/', $dayOff['dayEnd'])[0])
+                    || ($monthOfStartDay == explode('/', $dayOff['dayStart'])[0])
+                ) {
+                    $nr += round(strtotime($dayOff['dayEnd']) - strtotime($dayOff['dayStart'])) / (60 * 60 * 24) + 1;
+                    //                    $nr += $this->eliminateWeekendsDays($dayOff['dayStart'], $dayOff['dayEnd']);
+                    if ($nr <= 2) {
+                        $nr = 0;
+                        $date = new DateTime($dayOffStartEnd[1]);
+                        $firstDayOfMonth = $date->modify('first day of this month')->format('m/d/Y');
+                        $nr += $this->eliminateWeekendsDays($firstDayOfMonth, $dayOffStartEnd[1]);
+                    }
+                }
+            }
+
+            return $nr;
+        }
+        $date = new DateTime($dayOffStartEnd[0]);
+        //$lastDayOfMonth = date('t', strtotime($dayOffStartEnd [0]));
+        $lastDayOfMonth = $date->modify('last day of this month')->format('m/d/Y');
+        //$nr += intval($lastDayOfMonth) - intval(explode('/', $dayOffStartEnd [0])[1]) + 1;
+        $nr += $this->eliminateWeekendsDays($dayOffStartEnd [0], $lastDayOfMonth);
         foreach ($daysOffFromUser as $dayOff) {
-            if ('WH' === $dayOff['type']) {
+            if ($dayOff['type'] === 'WH'
+                && (($monthOfStartDay == explode('/', $dayOff['dayEnd'])[0])
+                    || ($monthOfStartDay == explode('/', $dayOff['dayStart'])[0]))
+            ) {
                 $nr += round(strtotime($dayOff['dayEnd']) - strtotime($dayOff['dayStart'])) / (60 * 60 * 24) + 1;
+                if ($nr <= 2) {
+                    $nr = 0;
+                    $date = new DateTime($dayOffStartEnd[1]);
+                    $firstDayOfMonth = $date->modify('first day of this month')->format('m/d/Y');
+                    $nr += $this->eliminateWeekendsDays($firstDayOfMonth, $dayOffStartEnd[1]);
+                }
             }
         }
-        $dayOffStartEnd = explode(' - ', $day);
-        $nr += round(strtotime($dayOffStartEnd[1]) - strtotime($dayOffStartEnd[0])) / (60 * 60 * 24) + 1;
 
         return $nr;
+    }
+
+    private function eliminateWeekendsDays($start, $end)
+    {
+        $start = strtotime($start);
+        $end = strtotime($end);
+        $result = [];
+        while ($start <= $end) {
+            if (date('N', $start) <= 5) {
+                $current = date('m/d/Y', $start);
+                $result[$current] = 7.5;
+            }
+            $start += 86400;
+        }
+
+        return count($result);
     }
 }

@@ -32,3 +32,11 @@ send_email:
 delete_day_off:
   path: /deleteDayOff/{id}
   defaults: {_controller: AppBundle:User:deleteDayOff}
+
+users:
+  path: /users
+  defaults: {_controller: AppBundle:Admin:getUsers}
+
+numberOfDaysOff:
+  path: numberOfDaysOff
+  defaults: {_controller: AppBundle:Admin:addNumberOfFreeDayForUser}

@@ -60,6 +60,10 @@ services:
         class: AppBundle\Repository\DayOffRepository
         arguments:
             $entityClass: AppBundle\Entity\DayOff
+    AppBundle\Repository\TableHolidaysForEmployeeRepository:
+        class: AppBundle\Repository\TableHolidaysForEmployeeRepository
+        arguments:
+            $entityClass: AppBundle\Entity\TableHolidaysForEmployee
 
     calendarService:
         class: AppBundle\Service\CalendarService
@@ -95,3 +99,7 @@ services:
         class: AppBundle\Controller\AdminController
         arguments:
               - '@calendarService'
+              - '@AppBundle\Repository\UserRepository'
+              - '@AppBundle\Repository\TableHolidaysForEmployeeRepository'
+
+

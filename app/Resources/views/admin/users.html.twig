@@ -1,0 +1,77 @@
+{% extends 'layout/layout.html.twig' %}
+
+{% block title %}
+    {% trans %}Users{% endtrans %}
+{% endblock %}
+
+{% block content %}
+    <div id="page-wrapper" style=" min-height: 1043px;">
+        <div class="container">
+            <div class="row">
+                <div class="col-xs-12 col-sm-8 col-md-6 col-sm-offset-2 col-md-offset-3">
+                    <h2>Users</h2>
+                    <div class="panel-body">
+                        <form action="{{ path('numberOfDaysOff') }}"
+                              method="post">
+                            <div class="form-group">
+                                <select id="select" name="name" style="width: 255px;">
+                                    {% for user in users %}
+                                        {% if(user.firstname!='admin') %}
+                                            <option data-id="{{ user.id }}"
+                                                    value="{{ user.lastname }}">{{ user.firstname }} {{ user.lastname }}
+                                            </option>
+                                        {% endif %}
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <div class='input-group name' id='numberOfDayOff' style="width: 255px;">
+                                    <input type='text' id="number" class="form-control" name="number" required
+                                           placeholder="Number of dayOff per year"/>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-xs-12 col-md-6">
+                                    <button type="submit" class="btn btn-primary btn-block btn-lg" tabindex="8">Save
+                                    </button>
+                                </div>
+                            </div>
+                            <hr class="colorgraph">
+                        </form>
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-hover table-striped">
+                                <thead>
+                                <tr>
+
+                                    <th>Id</th>
+                                    <th>Firstname</th>
+                                    <th>Lastname</th>
+                                    <th>Number of DaysOff Per Year</th>
+
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {% for user in users %}
+                                    {% if(user.firstname!='admin') %}
+                                        <tr id="{{ user.id }}">
+                                            <td>{{ user.id }}</td>
+                                            <td>{{ user.firstname }}</td>
+                                            <td>{{ user.lastname }}</td>
+                                            {% for holiday in holidays %}
+                                                {% if holiday.userId==user.id %}
+                                                    <td>{{ holiday.numberOfDaysOff }}</td>
+                                                {% endif %}
+                                            {% endfor %}
+                                        </tr>
+                                    {% endif %}
+                                {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+

@@ -11,37 +11,49 @@ class UserRepository extends ServiceEntityRepository implements UserLoaderInterf
     public function getAllUsers()
     {
         return $this->getEntityManager()
-            ->createQueryBuilder()
-            ->select('u')
-            ->from('AppBundle:User', 'u')
-            ->getQuery()
-            ->getResult();
+                    ->createQueryBuilder()
+                    ->select('u')
+                    ->from('AppBundle:User', 'u')
+                    ->getQuery()
+                    ->getResult();
     }
 
     public function findUserWhereTeam($value)
     {
         return $this->getEntityManager()
-            ->createQueryBuilder()
-            ->select('u')
-            ->from('AppBundle:User', 'u')
-            ->where("u.team=:team")
-            ->setParameter('team', $value)
-            ->getQuery()
-            ->getResult();
+                    ->createQueryBuilder()
+                    ->select('u')
+                    ->from('AppBundle:User', 'u')
+                    ->where("u.team=:team")
+                    ->setParameter('team', $value)
+                    ->getQuery()
+                    ->getResult();
+    }
+
+    public function findUserIdWhereField($field, $value)
+    {
+        return $this->getEntityManager()
+                    ->createQueryBuilder()
+                    ->select('u.id')
+                    ->from('AppBundle:User', 'u')
+                    ->where("u.$field=:value")
+                    ->setParameter('value', $value)
+                    ->getQuery()
+                    ->getResult();
     }
 
     public function findUserWhereEmailAndPassword($email, $password)
     {
         return $this->getEntityManager()
-            ->createQueryBuilder()
-            ->select('u')
-            ->from('AppBundle:User', 'u')
-            ->where('u . email:email')
-            ->andWhere('u . password =:password')
-            ->setParameter('email', $email)
-            ->setParameter('password', $password)
-            ->getQuery()
-            ->getResult();
+                    ->createQueryBuilder()
+                    ->select('u')
+                    ->from('AppBundle:User', 'u')
+                    ->where('u . email:email')
+                    ->andWhere('u . password =:password')
+                    ->setParameter('email', $email)
+                    ->setParameter('password', $password)
+                    ->getQuery()
+                    ->getResult();
     }
 
     /**
@@ -56,10 +68,10 @@ class UserRepository extends ServiceEntityRepository implements UserLoaderInterf
     public function loadUserByUsername($username)
     {
         return $this->createQueryBuilder('u')
-            ->where('u . username = :username OR u . email = :email')
-            ->setParameter('username', $username)
-            ->setParameter('email', $username)
-            ->getQuery()
-            ->getOneOrNullResult();
+                    ->where('u . username = :username OR u . email = :email')
+                    ->setParameter('username', $username)
+                    ->setParameter('email', $username)
+                    ->getQuery()
+                    ->getOneOrNullResult();
     }
 }

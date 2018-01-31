@@ -2,8 +2,12 @@
 
 namespace AppBundle\Controller;
 
+use AppBundle\Entity\TableHolidaysForEmployee;
 use AppBundle\Entity\Team;
+use AppBundle\Entity\User;
 use AppBundle\Form\Type\TeamType;
+use AppBundle\Repository\TableHolidaysForEmployeeRepository;
+use AppBundle\Repository\UserRepository;
 use AppBundle\Service\CalendarService;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -14,11 +18,19 @@ class AdminController extends Controller
 {
     private $myService;
     private $router;
+    private $userRepository;
+    private $tableHolidaysForEmployeeRepository;
 
-    public function __construct(CalendarService $myService, RouterInterface $router)
-    {
+    public function __construct(
+        CalendarService $myService,
+        UserRepository $userRepository,
+        TableHolidaysForEmployeeRepository $tableHolidaysForEmployeeRepository,
+        RouterInterface $router
+    ) {
         $this->myService = $myService;
         $this->router = $router;
+        $this->userRepository = $userRepository;
+        $this->tableHolidaysForEmployeeRepository = $tableHolidaysForEmployeeRepository;
     }
 
     public function addTeamAction(Request $request)
@@ -42,6 +54,19 @@ class AdminController extends Controller
         );
     }
 
+    public function getUsersAction()
+    {
+        return $this->render(
+
+            'admin/users.html.twig',
+            [
+                'users' => $this->userRepository->getAllUsers(),
+                'holidays' => $this->tableHolidaysForEmployeeRepository->getAllHolidays(),
+
+            ]
+        );
+    }
+
     public function addFreeDaysAction(Request $request)
     {
         $date = $request->request->get('_date');
@@ -62,8 +87,42 @@ class AdminController extends Controller
         );
     }
 
-    public function indexAction(\Swift_Mailer $mailer)
+    public function addNumberOfFreeDayForUserAction(Request $request)
     {
+        if ($request->isMethod('POST')) {
+            $lastname = $request->request->get('name');
+            $userId = $this->userRepository->findUserIdWhereField('lastname', $lastname)[0]['id'];
+            $numberOfLegalDayOff = $request->request->get('number');
+
+            $existsHolidaysForEmployee = $this->tableHolidaysForEmployeeRepository->findHolidaysWhereUserId($userId)[0];
+            if ($existsHolidaysForEmployee) {
+                $em = $this->getDoctrine()->getManager();
+                $existsHolidaysForEmployee->setNumberOfDaysOff($numberOfLegalDayOff);
+                $em->flush();
+
+                return $this->redirectToRoute('users');
+            }
+            $tableHolidaysForEmployee = new TableHolidaysForEmployee();
+            $tableHolidaysForEmployee->setUserId($userId);
+            $tableHolidaysForEmployee->setNumberOfDaysOff($numberOfLegalDayOff);
+            $em = $this->getDoctrine()->getManager();
+            $em->persist($tableHolidaysForEmployee);
+            $em->flush();
+
+            return $this->redirectToRoute('users');
+        }
+
+        return $this->render(
+            'admin/users.html.twig',
+            [
+                'users' => $this->userRepository->getAllUsers(),
+            ]
+        );
+    }
+
+    public function indexAction(
+        \Swift_Mailer $mailer
+    ) {
         $message = (new \Swift_Message('Hello Email'))
             ->setFrom('andreea_spoeala@yahoo.com')
             ->setTo('andreea_spoeala@yahoo.com')

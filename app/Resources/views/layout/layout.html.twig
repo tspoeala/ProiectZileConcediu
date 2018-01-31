@@ -22,6 +22,9 @@
                 <ul class="nav navbar-top-links navbar-right">
                     {% if is_granted(expression('"ROLE_ADMIN" in roles ')) %}
                         <li>
+                            <a href="{{ path('users') }}"><i class="fa fa-pencil"></i>Users</a>
+                        </li>
+                        <li>
                             <a href="{{ path('add_team') }}"><i class="fa fa-pencil"></i> Add new Team</a>
                         </li>
                         <li>

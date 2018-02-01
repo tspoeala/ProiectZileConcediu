@@ -19,10 +19,21 @@ class FreeDaysRepository extends ServiceEntityRepository
     public function getFreeDays()
     {
         return $this->getEntityManager()
-            ->createQueryBuilder()
-            ->select('fd')
-            ->from('AppBundle:FreeDays', 'fd')
-            ->getQuery()
-            ->getResult();
+                    ->createQueryBuilder()
+                    ->select('fd')
+                    ->from('AppBundle:FreeDays', 'fd')
+                    ->getQuery()
+                    ->getResult();
+    }
+
+    public function deleteFreeDayWhereId($id)
+    {
+        return $this->getEntityManager()
+                    ->createQueryBuilder()
+                    ->delete('AppBundle:FreeDays', 'fd')
+                    ->where('fd.id=?1')
+                    ->setParameter(1, $id)
+                    ->getQuery()
+                    ->getResult();
     }
 }

@@ -16,7 +16,6 @@ class UserController extends Controller
     private $userManager;
     private $dayOffRepository;
 
-
     public function __construct(
         CalendarService $myService,
         UserManager $userManager,
@@ -34,7 +33,7 @@ class UserController extends Controller
         return $this->redirectToRoute('account');
     }
 
-    public function myTeamAction(Request $request)
+    public function myAccountAction(Request $request)
     {
         $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
         /** @var User $user */
@@ -47,15 +46,7 @@ class UserController extends Controller
         $daysOffRequest = $request->request->get('daterange');
         $type = $request->request->get('type');
         if ($request->isMethod('POST')) {
-            if ($type === 'WH'
-                && $this->myService->limitWorkFromHomeDays($daysOffRequest, $daysOffFromUser)
-                   > CalendarService::MAX_WH_DAYS
-            ) {
-                $this->addFlash(
-                    'warning',
-                    'You have the right at ' . CalendarService::MAX_WH_DAYS . ' days of work from home per month.'
-                );
-
+            if ($this->verifyNrOfDayOff($daysOffRequest, $type, $daysOffFromUser, $user->getId())) {
                 return $this->redirectToRoute('account');
             }
             $this->myService->saveDateOff($user, $daysOffRequest, $type);
@@ -64,8 +55,9 @@ class UserController extends Controller
         }
         $freeDays = $this->myService->getFreeDaysForFullCalendar();
 
-        $freeAndDayOff = array_merge(
-            $this->myService->getAllDayOffForUser($daysOffFromUser),
+        $freeAndDaysOff = array_merge(
+            $this->myService->getAllDayOffForUser($daysOffFromUser, 'CO'),
+            $this->myService->getAllDayOffForUser($daysOffFromUser, 'WH'),
             $this->myService->getFreeDays()
         );
 
@@ -74,7 +66,7 @@ class UserController extends Controller
             [
                 'usersFromTeam' => $this->getInfo($user)['usersFromTeam'],
                 'user' => $user,
-                'freeAndDayOff' => json_encode($freeAndDayOff),
+                'freeAndDayOff' => json_encode($freeAndDaysOff),
                 'freeDays' => json_encode($freeDays),
                 'daysOff' => json_encode($this->getInfo($user)['daysOff']),
                 'daysOffFromUser' => $daysOffFromUser,
@@ -82,13 +74,32 @@ class UserController extends Controller
         );
     }
 
-    public function sendNewEmailAction(
-        MailerService $mailerService
-    ) {
-        $user = $this->getUser();
-        $mailerService->sendMessageToTeamMembers('andreea_spoeala@yahoo.com', 'ana', '2');
+    private function verifyNrOfDayOff($daysOffRequest, $type, $daysOffFromUser, $userId)
+    {
+        if ($type === 'CO'
+            && $this->myService->limitDaysOffPerYear($daysOffRequest, $daysOffFromUser)
+               > $this->myService->getNrDaysOffForUser($userId)
+        ) {
+            $this->addFlash(
+                'warning',
+                'You have the right at '
+                . $this->myService->getNrDaysOffForUser($userId)
+                . ' days off per year.'
+            );
 
-        return $this->redirectToRoute('home');
+            return $this->redirectToRoute('account');
+        }
+        if ($type === 'WH'
+            && $this->myService->limitWorkFromHomeDays($daysOffRequest, $daysOffFromUser)
+               > CalendarService::MAX_WH_DAYS
+        ) {
+            $this->addFlash(
+                'warning',
+                'You have the right at ' . CalendarService::MAX_WH_DAYS . ' days of work from home per month.'
+            );
+
+            return $this->redirectToRoute('account');
+        }
     }
 
     private function getInfo(User $user)
@@ -98,5 +109,14 @@ class UserController extends Controller
             'usersFromTeam' => $this->userManager->getUsersByTeam($user->getTeam()),
             'daysOff' => $this->myService->getDaysOffForFullCalendar($user),
         ];
+    }
+
+    //the next function it doesn't work
+    public function sendNewEmailAction(MailerService $mailerService)
+    {
+        $user = $this->getUser();
+        $mailerService->sendMessageToTeamMembers('andreea_spoeala@yahoo.com', 'ana', '2');
+
+        return $this->redirectToRoute('home');
     }
 }

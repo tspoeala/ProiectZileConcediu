@@ -4,6 +4,10 @@
     {% trans %}Add Free Days{% endtrans %}
 {% endblock %}
 
+{% block stylesheets %}
+    {{ parent() }}
+
+{% endblock %}
 {% block content %}
     <div id="page-wrapper" style=" min-height: 1043px;">
         <div class="container">
@@ -18,7 +22,7 @@
                                        placeholder="Name of Free Day"/>
                             </div>
                         </div>
-                        <div class="form-group" style="width: 455px;">
+                        <div class="form-group datetimepicker" style="width: 455px;">
                             <div class='input-group date' id='datetimepicker5'>
                                 <input type='text' id="date" class="form-control" name="_date" required/>
                                 <span class="input-group-addon">
@@ -39,7 +43,6 @@
                             <table class="table table-bordered table-hover table-striped">
                                 <thead>
                                 <tr>
-
                                     <th>Name</th>
                                     <th>Date</th>
                                     <th>Actions</th>
@@ -52,10 +55,8 @@
                                         <td>{{ freeDay['title'] }}</td>
                                         <td>{{ freeDay['start'] }}</td>
                                         <td>
-                                            <a href="/deleteFreeDay/">
-                                                <i type="button" data-id=""
-                                                   class="btn btn-sm btn-success btn-danger">Delete
-                                                </i>
+                                            <a href="/deleteFreeDay/{{ freeDay['id'] }}">
+                                                <i type="button" class="btn btn-sm btn-success btn-danger">Delete</i>
                                             </a>
                                         </td>
                                     </tr>

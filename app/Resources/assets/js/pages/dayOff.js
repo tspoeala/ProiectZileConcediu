@@ -45,6 +45,8 @@ $(function () {
     $.each(JSON.parse(daysOff), function (key, value) {
         let event = {
             events: value['daysOff'],
+            allDay: true,
+            nextDayThreshold: "00:00:00",
             color: value['color'],     // an option!
             textColor: 'white' // an option!
         };

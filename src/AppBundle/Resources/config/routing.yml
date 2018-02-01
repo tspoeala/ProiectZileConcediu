@@ -23,7 +23,7 @@ add_free_days:
 
 account:
   path: /account
-  defaults: {_controller: AppBundle:User:myTeam}
+  defaults: {_controller: AppBundle:User:myAccount}
 
 send_email:
   path: /sendEmail
@@ -33,10 +33,14 @@ delete_day_off:
   path: /deleteDayOff/{id}
   defaults: {_controller: AppBundle:User:deleteDayOff}
 
+delete_free_day:
+  path: /deleteFreeDay/{id}
+  defaults: {_controller: AppBundle:Admin:deleteFreeDay}
+
 users:
   path: /users
   defaults: {_controller: AppBundle:Admin:getUsers}
 
-numberOfDaysOff:
-  path: numberOfDaysOff
+number_of_days_off:
+  path: /numberOfDaysOff
   defaults: {_controller: AppBundle:Admin:addNumberOfFreeDayForUser}

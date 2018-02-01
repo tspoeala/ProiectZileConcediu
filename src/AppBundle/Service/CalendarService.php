@@ -75,7 +75,7 @@ class CalendarService
 
                 $daysOffFormatted[$keyUser][$keyDayOff]['start'] = $dayOff->getDateStart()->format('Y-m-d');
                 $daysOffFormatted[$keyUser][$keyDayOff]['end'] =
-                    $dayOff->getDateEnd()->modify('+1 day')->format('Y-m-d');
+                    $dayOff->getDateEnd()->format('Y-m-d');
                 $daysOffFormatted[$keyUser][$keyDayOff]['title'] =
                     $dayOff->getType() . ' ' . $user->getFirstname() . ' ' . $user->getLastname();
                 $usersWithDaysOff[$user->getUsername()]['daysOff'] = $daysOffFormatted[$keyUser];
@@ -95,6 +95,7 @@ class CalendarService
              * @var FreeDays $freeDay
              */
             foreach ($freeDays as $key => $freeDay) {
+                $freeDaysFormatted[$key]['id'] = $freeDay->getId();
                 $freeDaysFormatted[$key]['start'] = $freeDay->getDate()->format('Y-m-d');
                 $freeDaysFormatted[$key]['title'] = $freeDay->getName();
             }
@@ -142,15 +143,17 @@ class CalendarService
         return $dates;
     }
 
-    public function getAllDayOffForUser($daysOffFromUser)
+    public function getAllDayOffForUser($daysOffFromUser, $type)
     {
         //put the days off between dayStart and dayEnd
         $allDayOff = [];
         foreach ($daysOffFromUser as $dayOffFromUser) {
-            $allDayOff = array_merge(
-                $allDayOff,
-                $this->datePeriod_start_end($dayOffFromUser['dayStart'], $dayOffFromUser['dayEnd'])
-            );
+            if ($dayOffFromUser['type'] == $type) {
+                $allDayOff = array_merge(
+                    $allDayOff,
+                    $this->datePeriod_start_end($dayOffFromUser['dayStart'], $dayOffFromUser['dayEnd'])
+                );
+            }
         }
 
         return $allDayOff;
@@ -263,6 +266,17 @@ class CalendarService
                 );
             }
         }
+
+        return $nr;
+    }
+
+    public function limitDaysOffPerYear($day, $daysOffFromUser)
+    {
+        $nr = 0;
+        $dayOffStartEnd = explode(' - ', $day);
+
+        $nr += $this->eliminateWeekendsDays($dayOffStartEnd[0], $dayOffStartEnd[1]);
+        $nr += count($this->getAllDayOffForUser($daysOffFromUser, 'CO'));
 
         return $nr;
     }

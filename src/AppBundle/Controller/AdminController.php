@@ -4,8 +4,8 @@ namespace AppBundle\Controller;
 
 use AppBundle\Entity\TableHolidaysForEmployee;
 use AppBundle\Entity\Team;
-use AppBundle\Entity\User;
 use AppBundle\Form\Type\TeamType;
+use AppBundle\Repository\FreeDaysRepository;
 use AppBundle\Repository\TableHolidaysForEmployeeRepository;
 use AppBundle\Repository\UserRepository;
 use AppBundle\Service\CalendarService;
@@ -20,17 +20,20 @@ class AdminController extends Controller
     private $router;
     private $userRepository;
     private $tableHolidaysForEmployeeRepository;
+    private $freeDaysRepository;
 
     public function __construct(
         CalendarService $myService,
         UserRepository $userRepository,
         TableHolidaysForEmployeeRepository $tableHolidaysForEmployeeRepository,
+        FreeDaysRepository $freeDaysRepository,
         RouterInterface $router
     ) {
         $this->myService = $myService;
         $this->router = $router;
         $this->userRepository = $userRepository;
         $this->tableHolidaysForEmployeeRepository = $tableHolidaysForEmployeeRepository;
+        $this->freeDaysRepository = $freeDaysRepository;
     }
 
     public function addTeamAction(Request $request)
@@ -52,6 +55,13 @@ class AdminController extends Controller
             'admin/addTeam.html.twig',
             ['form' => $form->createView()]
         );
+    }
+
+    public function deleteFreeDayAction($id)
+    {
+        $this->freeDaysRepository->deleteFreeDayWhereId($id);
+
+        return $this->redirectToRoute('add_free_days');
     }
 
     public function getUsersAction()
@@ -93,6 +103,14 @@ class AdminController extends Controller
             $lastname = $request->request->get('name');
             $userId = $this->userRepository->findUserIdWhereField('lastname', $lastname)[0]['id'];
             $numberOfLegalDayOff = $request->request->get('number');
+            if (!preg_match('/^[1-9][0-9]$/', $numberOfLegalDayOff)) {
+                $this->addFlash(
+                    'warning',
+                    'You can only enter 2 digits'
+                );
+
+                return $this->redirectToRoute('users');
+            }
 
             $existsHolidaysForEmployee = $this->tableHolidaysForEmployeeRepository->findHolidaysWhereUserId($userId)[0];
             if ($existsHolidaysForEmployee) {
@@ -120,6 +138,7 @@ class AdminController extends Controller
         );
     }
 
+    //it doesn't work
     public function indexAction(
         \Swift_Mailer $mailer
     ) {

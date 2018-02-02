@@ -48,7 +48,7 @@ class AdminController extends Controller
             $em->flush();
             $this->addFlash("success", "Congratulation! You add a new team!");
 
-            return new RedirectResponse($this->router->generate('add_team'));
+            return $this->redirectToRoute('add_team');
         }
 
         return $this->render(
@@ -84,7 +84,7 @@ class AdminController extends Controller
         if ($request->isMethod('POST')) {
             $this->myService->saveFreeDay($date, $name);
 
-            return new RedirectResponse($this->router->generate('add_free_days'));
+            return $this->redirectToRoute('add_free_days');
         }
         $freeDays = $this->myService->getFreeDays();
 
@@ -112,10 +112,10 @@ class AdminController extends Controller
                 return $this->redirectToRoute('users');
             }
 
-            $existsHolidaysForEmployee = $this->tableHolidaysForEmployeeRepository->findHolidaysWhereUserId($userId)[0];
+            $existsHolidaysForEmployee = $this->tableHolidaysForEmployeeRepository->findHolidaysWhereUserId($userId);
             if ($existsHolidaysForEmployee) {
                 $em = $this->getDoctrine()->getManager();
-                $existsHolidaysForEmployee->setNumberOfDaysOff($numberOfLegalDayOff);
+                $existsHolidaysForEmployee[0]->setNumberOfDaysOff($numberOfLegalDayOff);
                 $em->flush();
 
                 return $this->redirectToRoute('users');
@@ -143,8 +143,8 @@ class AdminController extends Controller
         \Swift_Mailer $mailer
     ) {
         $message = (new \Swift_Message('Hello Email'))
-            ->setFrom('andreea_spoeala@yahoo.com')
-            ->setTo('andreea_spoeala@yahoo.com')
+            ->setFrom('andreea.spoeala@gmail.com')
+            ->setTo('andreea.spoeala@gmail.com')
             ->setBody(
                 $this->renderView(
                     'emails/exampleEmail.html.twig'

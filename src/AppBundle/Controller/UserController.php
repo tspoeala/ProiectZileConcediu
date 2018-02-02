@@ -39,6 +39,8 @@ class UserController extends Controller
         /** @var User $user */
         $user = $this->getUser();
         if ($this->isGranted('ROLE_ADMIN')) {
+            $user = null;
+
             return $this->redirectToRoute('home');
         }
 

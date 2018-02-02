@@ -70,12 +70,14 @@ class CalendarService
          * @var User   $user
          * @var DayOff $dayOff
          */
+
         foreach ($users as $keyUser => $user) {
             foreach ($user->getDaysOff() as $keyDayOff => $dayOff) {
 
                 $daysOffFormatted[$keyUser][$keyDayOff]['start'] = $dayOff->getDateStart()->format('Y-m-d');
+                $date = new DateTime($dayOff->getDateEnd()->format('Y-m-d'));
                 $daysOffFormatted[$keyUser][$keyDayOff]['end'] =
-                    $dayOff->getDateEnd()->format('Y-m-d');
+                    $date->modify('+1 day')->format('Y-m-d');
                 $daysOffFormatted[$keyUser][$keyDayOff]['title'] =
                     $dayOff->getType() . ' ' . $user->getFirstname() . ' ' . $user->getLastname();
                 $usersWithDaysOff[$user->getUsername()]['daysOff'] = $daysOffFormatted[$keyUser];
@@ -276,7 +278,8 @@ class CalendarService
         $dayOffStartEnd = explode(' - ', $day);
 
         $nr += $this->eliminateWeekendsDays($dayOffStartEnd[0], $dayOffStartEnd[1]);
-        $nr += count($this->getAllDayOffForUser($daysOffFromUser, 'CO'));
+        $allDaysOffForUser = $this->getAllDayOffForUser($daysOffFromUser, 'CO');
+        $nr += $this->eliminateWeekendsDays($allDaysOffForUser[0], end($allDaysOffForUser));
 
         return $nr;
     }
@@ -284,6 +287,11 @@ class CalendarService
     public function getNrDaysOffForUser($userId)
     {
         //get number of legal daysOff for user
-        return $this->tableHolidaysForEmployeeRepository->findHolidaysWhereUserId($userId)[0]->getNumberOfDaysOff();
+
+        if ($this->tableHolidaysForEmployeeRepository->findHolidaysWhereUserId($userId)) {
+            return $this->tableHolidaysForEmployeeRepository->findHolidaysWhereUserId($userId)[0]->getNumberOfDaysOff();
+        }
+
+        return 0;
     }
 }

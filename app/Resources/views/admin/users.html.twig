@@ -59,16 +59,21 @@
                                     <tbody>
                                     {% for user in users %}
                                         {% if(user.firstname!='admin') %}
+                                    {% for holiday in holidays %}
+                                        {% if holiday.userId==user.id %}
                                             <tr id="{{ user.id }}">
                                                 <td>{{ user.id }}</td>
                                                 <td>{{ user.firstname }}</td>
                                                 <td>{{ user.lastname }}</td>
-                                                {% for holiday in holidays %}
-                                                    {% if holiday.userId==user.id %}
-                                                        <td>{{ holiday.numberOfDaysOff }}</td>
-                                                    {% endif %}
-                                                {% endfor %}
+                                                <td>{{ holiday.numberOfDaysOff }}</td>
+                                                {#{% for holiday in holidays %}#}
+                                                {#{% if holiday.userId==user.id %}#}
+                                                {#<td>{{ holiday.numberOfDaysOff }}</td>#}
+                                                {#{% endif %}#}
+                                                {#{% endfor %}#}
                                             </tr>
+                                        {% endif %}
+                                    {% endfor %}
                                         {% endif %}
                                     {% endfor %}
                                     </tbody>

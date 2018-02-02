@@ -50,7 +50,7 @@ class Team
      */
     public function setName($name)
     {
-        $this->name = $name;
+        $this->name = ucwords($name);
 
         return $this;
     }

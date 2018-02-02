@@ -4,6 +4,7 @@ import 'bootstrap-datepicker';
 import 'daterangepicker';
 import 'fullcalendar';
 
+//delete console log at the end
 console.log(array);
 console.log(freeDays);
 console.log(daysOff);

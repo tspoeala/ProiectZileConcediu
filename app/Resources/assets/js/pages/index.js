@@ -3,6 +3,7 @@ import 'bootstrap-sass';
 import 'bootstrap-datepicker';
 import 'fullcalendar';
 
+//delete console log at the end
 console.log(JSON.parse(freeDays));
 console.log(JSON.parse(daysOff));
 var event = [];

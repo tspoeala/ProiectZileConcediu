@@ -62,12 +62,13 @@ doctrine:
 
 # Swiftmailer Configuration
 swiftmailer:
-    delivery_address: ['andreeateo554@gmail.com']
+#    delivery_address: ['andreeateo554@gmail.com']
     transport: '%mailer_transport%'
     host: '%mailer_host%'
     username: '%mailer_user%'
     password: '%mailer_password%'
-    encryption: '%mailer_encryption%'
-    port: '%mailer_port%'
-    auth_mode: '%mailer_auth_mode%'
+#    encryption: '%mailer_encryption%'
+#    port: '%mailer_port%'
+#    auth_mode: '%mailer_auth_mode%'
+    delivery_addresses: ['andreea.spoeala@gmail.com']
     spool: { type: memory }

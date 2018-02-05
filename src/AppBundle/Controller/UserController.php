@@ -113,6 +113,10 @@ class UserController extends Controller
         ];
     }
 
+    public function moveFreeDayAction($id, Request $request)
+    {
+    }
+
     //the next function it doesn't work
     public function sendNewEmailAction(MailerService $mailerService)
     {

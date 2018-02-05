@@ -19,7 +19,6 @@ class DayOff
      * @ORM\GeneratedValue(strategy="AUTO")
      */
     private $id;
-
     /**
      * @var \DateTime
      * @ORM\Column(name="dateStart", type="datetime")
@@ -31,15 +30,20 @@ class DayOff
      */
     private $dateEnd;
     /**
+     * @var \DateTime
+     * @ORM\Column(name="dateFrom", type="datetime", nullable=true)
+     */
+    private $dateFrom;
+    /**
      * @ManyToOne(targetEntity="AppBundle\Entity\User")
      * @JoinColumn(name="user_id", referencedColumnName="id")
      */
     private $user;
-
     /**
      * @ORM\Column(name="type", type="string", length=50)
      */
     private $type;
+
     /**
      * Get id
      *
@@ -116,6 +120,30 @@ class DayOff
     public function getDateEnd()
     {
         return $this->dateEnd;
+    }
+
+    /**
+     * Set dateEnd
+     *
+     * @param \DateTime $dateFrom
+     *
+     * @return DayOff
+     */
+    public function setDateFrom($dateFrom)
+    {
+        $this->dateFrom = $dateFrom;
+
+        return $this;
+    }
+
+    /**
+     * Get dateFrom
+     *
+     * @return \DateTime
+     */
+    public function getDateFrom()
+    {
+        return $this->dateFrom;
     }
 
     /**

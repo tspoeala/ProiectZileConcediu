@@ -44,3 +44,7 @@ users:
 number_of_days_off:
   path: /numberOfDaysOff
   defaults: {_controller: AppBundle:Admin:addNumberOfFreeDayForUser}
+
+move_free_day:
+  path:  /moveFreeDay/{id}
+  defaults: { _controller: AppBundle:User:moveFreeDay }

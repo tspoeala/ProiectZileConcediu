@@ -66,5 +66,6 @@ swiftmailer:
     username: '%mailer_user%'
     password: '%mailer_password%'
     port: '%mailer_port%'
+    url: '%mailer_url%'
 #    spool: { type: memory }
 

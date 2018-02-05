@@ -10,7 +10,6 @@ use AppBundle\Repository\TableHolidaysForEmployeeRepository;
 use AppBundle\Repository\UserRepository;
 use AppBundle\Service\CalendarService;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\RouterInterface;
 
@@ -142,31 +141,39 @@ class AdminController extends Controller
     public function indexAction(
         \Swift_Mailer $mailer
     ) {
-        $message = (new \Swift_Message('Hello Email'))
-            ->setFrom('andreea.spoeala@gmail.com')
+        $message = (new \Swift_Message())
+            ->setSubject('Hello Email')
+            ->setFrom('andreea_spoeala@yahoo.com')
             ->setTo('andreea.spoeala@gmail.com')
-            ->setBody(
-                $this->renderView(
-                    'emails/exampleEmail.html.twig'
-                //                    ['name' => 'Teodora']
-                ),
-                'text/html'
-            )/*
-             * If you also want to include a plaintext version of the message
-            ->addPart(
-                $this->renderView(
-                    'Emails/registration.txt.twig',
-                    array('name' => $name)
-                ),
-                'text/plain'
-            )
-            */
+            ->setBody('Here is the message itself')
+
+            ->addPart('<q>Here is the message itself</q>', 'text/html')
+//            ->setBody(
+//                $this->renderView(
+//                    'emails/exampleEmail.html.twig'
+//                //                    ['name' => 'Teodora']
+//                ),
+//                'text/html'
+//            )/*
+//             * If you also want to include a plaintext version of the message
+//            ->addPart(
+//                $this->renderView(
+//                    'Emails/registration.txt.twig',
+//                    array('name' => $name)
+//                ),
+//                'text/plain'
+//            )
+//            */
         ;
+        //        dump($mailer->send($message));
+        //        die(__FILE__ . " Line: " . __LINE__);
+        if (!$mailer->send($message)) {
+            $this->addFlash(
+                'warning',
+                'The email is not sent'
+            );
+        }
 
-        $mailer->send($message);
-
-        // or, you can also fetch the mailer service this way
-        // $this->get('mailer')->send($message);
 
         return $this->render('vacationDays/blank.html.twig');
     }

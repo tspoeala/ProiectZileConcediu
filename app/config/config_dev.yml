@@ -37,14 +37,11 @@ monolog:
         #    type: chromephp
         #    level: info
 
-#swiftmailer:
-#    delivery_addresses: ['andreeateo554@gmail.com']
 # Swiftmailer Configuration
 swiftmailer:
-#    delivery_address: ['andreeateo554@gmail.com']
     transport: gmail
-#    host: ~
-    username: andreea.spoeala
-    password: lyranvumvhyoqayq
-    delivery_addresses: ['andreea.spoeala@gmail.com']
+    username: andreea.teodora3094@gmail.com
+    password: osugblhsikfnjgka
+
+#    delivery_addresses: ['andreea.spoeala@gmail.com']
 #    spool: { type: memory }

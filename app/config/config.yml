@@ -66,5 +66,5 @@ swiftmailer:
 #    host: '%mailer_host%'
     username: '%mailer_user%'
     password: '%mailer_password%'
-    delivery_addresses: [andreea_spoeala@yahoo.com]
+    delivery_addresses: ['andreea_spoeala@yahoo.com']
     spool: { type: memory }

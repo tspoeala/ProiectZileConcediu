@@ -93,11 +93,13 @@ class UserController extends Controller
         }
         if ($type === 'WH'
             && $this->myService->limitWorkFromHomeDays($daysOffRequest, $daysOffFromUser)
-               > CalendarService::MAX_WH_DAYS
+               > $this->container->getParameter('max_workfromhome_days')
         ) {
             $this->addFlash(
                 'warning',
-                'You have the right at ' . CalendarService::MAX_WH_DAYS . ' days of work from home per month.'
+                'You have the right at '
+                . $this->container->getParameter('max_workfromhome_days')
+                . ' days of work from home per month.'
             );
 
             return $this->redirectToRoute('account');
@@ -115,6 +117,9 @@ class UserController extends Controller
 
     public function moveFreeDayAction($id, Request $request)
     {
+        $date = $request->request->get('_date');
+        $post = $request->request->all();
+        dump($request);
     }
 
     //the next function it doesn't work

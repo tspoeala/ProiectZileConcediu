@@ -12,6 +12,7 @@ use AppBundle\Repository\UserRepository;
 use DateInterval;
 use DatePeriod;
 use DateTime;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 class CalendarService
 {
@@ -20,24 +21,27 @@ class CalendarService
     private $freeDaysRepository;
     private $userManager;
     private $tableHolidaysForEmployeeRepository;
-    const  MAX_WH_DAYS = 2;
+    private $serviceContainer;
 
     public function __construct(
         UserRepository $userRepository,
         DayOffRepository $daysOffRepository,
         FreeDaysRepository $freeDaysRepository,
         UserManager $userManager,
-        TableHolidaysForEmployeeRepository $tableHolidaysForEmployeeRepository
+        TableHolidaysForEmployeeRepository $tableHolidaysForEmployeeRepository,
+        ContainerInterface $serviceContainer
     ) {
         $this->userRepository = $userRepository;
         $this->daysOffRepository = $daysOffRepository;
         $this->freeDaysRepository = $freeDaysRepository;
         $this->userManager = $userManager;
         $this->tableHolidaysForEmployeeRepository = $tableHolidaysForEmployeeRepository;
+        $this->serviceContainer = $serviceContainer;
     }
 
-    public function getDaysOffForFullCalendar($userLogged = null)
-    {
+    public function getDaysOffForFullCalendar(
+        $userLogged = null
+    ) {
         /**
          * @var User $userLogged
          */
@@ -62,8 +66,9 @@ class CalendarService
         return substr($color, 0, 7);
     }
 
-    public function getDaysOffForUsers($users)
-    {
+    public function getDaysOffForUsers(
+        $users
+    ) {
         $daysOffFormatted = [];
         $usersWithDaysOff = [];
         /**
@@ -106,8 +111,9 @@ class CalendarService
         return $freeDaysFormatted;
     }
 
-    public function getDaysOffByUserId($userId)
-    {
+    public function getDaysOffByUserId(
+        $userId
+    ) {
 
         $daysOffFormatted = [];
 
@@ -129,8 +135,10 @@ class CalendarService
         return $daysOffFormatted;
     }
 
-    public function datePeriod_start_end($begin, $end)
-    {
+    public function datePeriod_start_end(
+        $begin,
+        $end
+    ) {
 
         $begin = new DateTime($begin);
 
@@ -145,8 +153,10 @@ class CalendarService
         return $dates;
     }
 
-    public function getAllDayOffForUser($daysOffFromUser, $type)
-    {
+    public function getAllDayOffForUser(
+        $daysOffFromUser,
+        $type
+    ) {
         //put the days off between dayStart and dayEnd
         $allDayOff = [];
         foreach ($daysOffFromUser as $dayOffFromUser) {
@@ -178,8 +188,11 @@ class CalendarService
         return $freeDaysFormatted;
     }
 
-    public function saveDateOff($user, $daysOff, $type)
-    {
+    public function saveDateOff(
+        $user,
+        $daysOff,
+        $type
+    ) {
         $daysOffStartEnd = explode(' - ', $daysOff);
         if (count($daysOffStartEnd) == 2) {
             $dateStart = new DateTime($daysOffStartEnd[0]);
@@ -189,16 +202,20 @@ class CalendarService
         }
     }
 
-    public function saveFreeDay($date, $name)
-    {
+    public function saveFreeDay(
+        $date,
+        $name
+    ) {
         if (!empty($date) && !empty($name)) {
             $date = new DateTime($date);
             $this->freeDaysRepository->save($date, $name);
         }
     }
 
-    public function limitWorkFromHomeDays($day, $daysOffFromUser)
-    {
+    public function limitWorkFromHomeDays(
+        $day,
+        $daysOffFromUser
+    ) {
         $nr = 0;
         $dayOffStartEnd = explode(' - ', $day);
         $monthOfStartDay = explode('/', $dayOffStartEnd [0])[0];
@@ -214,7 +231,7 @@ class CalendarService
         $nr += $this->eliminateWeekendsDays($dayOffStartEnd [0], $lastDayOfMonth);
         //get the number of WorkFromHomeDays from month monthOfStartDay
         $nr += $this->getNrWorkFromHomeDaysFromMonth($daysOffFromUser, $monthOfStartDay, $dayOffStartEnd[0]);
-        if ($nr > self::MAX_WH_DAYS) {
+        if ($nr > $this->serviceContainer->getParameter('max_workfromhome_days')) {
 
             return $nr;
         }
@@ -228,8 +245,10 @@ class CalendarService
         return $nr;
     }
 
-    private function eliminateWeekendsDays($start, $end)
-    {
+    private function eliminateWeekendsDays(
+        $start,
+        $end
+    ) {
         $start = strtotime($start);
         $end = strtotime($end);
         $result = [];
@@ -244,8 +263,11 @@ class CalendarService
         return count($result);
     }
 
-    private function getNrWorkFromHomeDaysFromMonth($daysOffFromUser, $month, $dayRequest)
-    {
+    private function getNrWorkFromHomeDaysFromMonth(
+        $daysOffFromUser,
+        $month,
+        $dayRequest
+    ) {
         $nr = 0;
         foreach ($daysOffFromUser as $dayOff) {
             if ($dayOff['type'] !== 'WH') {
@@ -272,8 +294,10 @@ class CalendarService
         return $nr;
     }
 
-    public function limitDaysOffPerYear($day, $daysOffFromUser)
-    {
+    public function limitDaysOffPerYear(
+        $day,
+        $daysOffFromUser
+    ) {
         $nr = 0;
         $dayOffStartEnd = explode(' - ', $day);
 
@@ -284,8 +308,9 @@ class CalendarService
         return $nr;
     }
 
-    public function getNrDaysOffForUser($userId)
-    {
+    public function getNrDaysOffForUser(
+        $userId
+    ) {
         //get number of legal daysOff for user
 
         if ($this->tableHolidaysForEmployeeRepository->findHolidaysWhereUserId($userId)) {

@@ -72,6 +72,8 @@ services:
               - '@AppBundle\Repository\DayOffRepository'
               - '@AppBundle\Repository\FreeDaysRepository'
               - '@userManager'
+              - '@AppBundle\Repository\TableHolidaysForEmployeeRepository'
+
 
     userManager:
         class: AppBundle\Service\UserManager

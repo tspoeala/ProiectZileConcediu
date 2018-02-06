@@ -10,6 +10,7 @@ console.log(freeDays);
 console.log(daysOff);
 var event = [];
 
+
 $(function () {
     $('input[name="daterange"]').daterangepicker(
         {
@@ -49,13 +50,7 @@ $(function () {
                 }
                 else {
                     $('#addModal').modal();
-                    let finalPath = Rules.paths.moveFreeDay.replace('SETID', event.id);
-                    console.log(finalPath);
-                    $("#form_move_day").action = finalPath;
-                    $('#save_move_day').click(function () {
-                        $('#form_move_day').attr('action', finalPath);
-                    });
-                    // console.log(Rules.paths.moveFreeDay.replace('SETID', event.id));
+                    $('#modalSaveBtn').attr('onclick', 'javascript:moveFreeDay(' + id + ')');
                 }
             },
             weekends: false,
@@ -78,16 +73,19 @@ $(function () {
 
 $(function () {
     console.log(array);
-    $('#datetimepicker5').datepicker({
-                             autoclose: true,    // It is false, by default
-                             format: 'mm/dd/yyyy',
-                             datesDisabled: JSON.parse(array),
-                             daysOfWeekDisabled: '06',
-                             todayHighlight: true,
-                             minDate: 0
+    $('#datetime').datepicker({
+                      autoclose: true,    // It is false, by default
+                      format: 'mm/dd/yyyy',
+                      datesDisabled: JSON.parse(array),
+                      daysOfWeekDisabled: '06',
+                      todayHighlight: true,
+                      minDate: 0
 
 
-                         })
-                         .on('changeDate', function (e) {
-                         });
+                  })
+                  .on('changeDate', function (e) {
+                  });
 });
+
+
+

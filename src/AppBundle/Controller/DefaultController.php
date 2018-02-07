@@ -14,8 +14,6 @@ class DefaultController extends Controller
         }
         $freeDays = $calendarService->getFreeDaysForFullCalendar();
         $daysOff = $calendarService->getDaysOffForFullCalendar();
-//        dump($daysOff);
-//        die(__FILE__ . " Line: " . __LINE__);
 
         return $this->render(
             'vacationDays/index.html.twig',

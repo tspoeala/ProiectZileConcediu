@@ -2,7 +2,7 @@
 <project version="4">
   <component name="PublishConfigData">
     <serverData>
-      <paths name="emag">
+      <paths name="eos-all8707-ro-dev.mwp4.c.emag.network">
         <serverdata>
           <mappings>
             <mapping local="$PROJECT_DIR$" web="/" />

@@ -4,6 +4,7 @@ namespace AppBundle\Controller;
 
 use AppBundle\Entity\User;
 use AppBundle\Repository\DayOffRepository;
+use AppBundle\Repository\FreeDaysRepository;
 use AppBundle\Repository\TableHolidaysForEmployeeRepository;
 use AppBundle\Service\CalendarService;
 use AppBundle\Service\MailerService;
@@ -17,22 +18,25 @@ class UserController extends Controller
     private $userManager;
     private $dayOffRepository;
     private $tableHolidaysForEmployeeRepository;
+    private $freeDaysRepository;
 
     public function __construct(
         CalendarService $myService,
         UserManager $userManager,
         DayOffRepository $dayOffRepository,
-        TableHolidaysForEmployeeRepository $tableHolidaysForEmployeeRepository
+        TableHolidaysForEmployeeRepository $tableHolidaysForEmployeeRepository,
+        FreeDaysRepository $freeDaysRepository
     ) {
         $this->myService = $myService;
         $this->userManager = $userManager;
         $this->dayOffRepository = $dayOffRepository;
         $this->tableHolidaysForEmployeeRepository = $tableHolidaysForEmployeeRepository;
+        $this->freeDaysRepository = $freeDaysRepository;
     }
 
     public function deleteDayOffAction($id)
     {
-        $this->dayOffRepository->deleteDayOffWhereId($id);
+        $this->dayOffRepository->deleteDayOffWhereField('id', $id);
 
         return $this->redirectToRoute('account');
     }
@@ -126,17 +130,15 @@ class UserController extends Controller
         $dayOff = $_POST['day'];
         $freeDayId = $_POST['freeDayId'];
         if ($request->isMethod('POST') && !empty($dayOff)) {
+            $dateFreeDay =
+                ($this->freeDaysRepository->findFreeDayWhereField('id', $freeDayId)[0])->getDate()->format('Y-m-d');
+            if (!empty($this->dayOffRepository->findDayOffWhereUserIdAndDateFrom($user, $dateFreeDay)[0])) {
+                $id =
+                    $this->dayOffRepository->findDayOffWhereUserIdAndDateFrom($user->getId(), $dateFreeDay)[0]->getId();
+                $this->dayOffRepository->deleteDayOffWhereField('id', $id);
+            }
             $this->myService->moveFreeDayTo($freeDayId, $user, $dayOff);
         }
-
-        return $this->redirectToRoute('home');
-    }
-
-    //the next function it doesn't work
-    public function sendNewEmailAction(MailerService $mailerService)
-    {
-        $user = $this->getUser();
-        $mailerService->sendMessageToTeamMembers('andreea_spoeala@yahoo.com', 'ana', '2');
 
         return $this->redirectToRoute('home');
     }

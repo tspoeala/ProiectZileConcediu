@@ -155,7 +155,7 @@ class CalendarService
         foreach (new DatePeriod($start, $oneday, $end->add($oneday)) as $day) {
             $day_num = $day->format("N"); /* 'N' number days 1 (mon) to 7 (sun) */
             if ($day_num < 6) { /* weekday */
-                $days[] = $day->format("Y-m-d");
+                $days[] = $day->format("m/d/Y");
             }
         }
 

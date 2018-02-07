@@ -97,6 +97,7 @@ services:
               - '@userManager'
               - '@AppBundle\Repository\DayOffRepository'
               - '@AppBundle\Repository\TableHolidaysForEmployeeRepository'
+              - '@AppBundle\Repository\FreeDaysRepository'
 
     AppBundle\Controller\AdminController:
         class: AppBundle\Controller\AdminController

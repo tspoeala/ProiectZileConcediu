@@ -35,7 +35,7 @@ class DayOffRepository extends ServiceEntityRepository
     {
         return $this->getEntityManager()
                     ->createQueryBuilder()
-                    ->select('do.id', 'do.userId', 'do.dateStart', 'do.dateEnd')
+                    ->select('do')
                     ->from('AppBundle:DayOff', 'do')
                     ->where("do.$field=:$field")
                     ->setParameter("$field", $value)
@@ -55,13 +55,27 @@ class DayOffRepository extends ServiceEntityRepository
                     ->getResult();
     }
 
-    public function deleteDayOffWhereId($id)
+    public function deleteDayOffWhereField($field, $value)
     {
         return $this->getEntityManager()
                     ->createQueryBuilder()
                     ->delete('AppBundle:DayOff', 'do')
-                    ->where('do.id=?1')
-                    ->setParameter(1, $id)
+                    ->where("do.$field=?1")
+                    ->setParameter(1, $value)
+                    ->getQuery()
+                    ->getResult();
+    }
+
+    public function findDayOffWhereUserIdAndDateFrom($user, $dateFrom)
+    {
+        return $this->getEntityManager()
+                    ->createQueryBuilder()
+                    ->select('do')
+                    ->from('AppBundle:DayOff', 'do')
+                    ->where("do.user=?1")
+                    ->setParameter(1, $user)
+                    ->andWhere("do.dateFrom=?2")
+                    ->setParameter(2, $dateFrom)
                     ->getQuery()
                     ->getResult();
     }

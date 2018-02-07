@@ -2,6 +2,7 @@
 
 namespace AppBundle\Repository;
 
+use AppBundle\Entity\TableHolidaysForEmployee;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 
 /**
@@ -32,5 +33,13 @@ class TableHolidaysForEmployeeRepository extends ServiceEntityRepository
                     ->from('AppBundle:TableHolidaysForEmployee', 'h')
                     ->getQuery()
                     ->getResult();
+    }
+
+    public function save($numberOfDaysOff)
+    {
+        $tableHolidaysForEmployee = new TableHolidaysForEmployee();
+        $tableHolidaysForEmployee->setNumberOfDaysOff($numberOfDaysOff);
+        $this->getEntityManager()->persist($tableHolidaysForEmployee);
+        $this->getEntityManager()->flush();
     }
 }

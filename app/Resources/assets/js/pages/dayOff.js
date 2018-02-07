@@ -45,10 +45,11 @@ $(function () {
 
             eventClick: function (event, jsEvent, view) {
                 var id = event.id;
+
                 if (id === undefined) {
                     return false;
                 }
-                else {
+                else if (userId) {
                     $('#addModal').modal();
                     $('#modalSaveBtn').attr('onclick', 'javascript:moveFreeDay(' + id + ')');
                 }

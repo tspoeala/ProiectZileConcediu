@@ -96,6 +96,7 @@ services:
               - '@calendarService'
               - '@userManager'
               - '@AppBundle\Repository\DayOffRepository'
+              - '@AppBundle\Repository\TableHolidaysForEmployeeRepository'
 
     AppBundle\Controller\AdminController:
         class: AppBundle\Controller\AdminController

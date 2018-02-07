@@ -39,9 +39,8 @@ class CalendarService
         $this->serviceContainer = $serviceContainer;
     }
 
-    public function getDaysOffForFullCalendar(
-        $userLogged = null
-    ) {
+    public function getDaysOffForFullCalendar($userLogged = null)
+    {
         /**
          * @var User $userLogged
          */
@@ -66,9 +65,8 @@ class CalendarService
         return substr($color, 0, 7);
     }
 
-    public function getDaysOffForUsers(
-        $users
-    ) {
+    public function getDaysOffForUsers($users)
+    {
         $daysOffFormatted = [];
         $usersWithDaysOff = [];
         /**
@@ -83,8 +81,17 @@ class CalendarService
                 $date = new DateTime($dayOff->getDateEnd()->format('Y-m-d'));
                 $daysOffFormatted[$keyUser][$keyDayOff]['end'] =
                     $date->modify('+1 day')->format('Y-m-d');
-                $daysOffFormatted[$keyUser][$keyDayOff]['title'] =
-                    $dayOff->getType() . ' ' . $user->getFirstname() . ' ' . $user->getLastname();
+
+                if ($dayOff->getType() === 'MFD') {
+                    $daysOffFormatted[$keyUser][$keyDayOff]['title'] =
+                        $dayOff->getType() . ' ' . ($this->freeDaysRepository->findFreeDayWhereField(
+                            'date',
+                            $dayOff->getDateFrom()
+                        )[0])->getName() . ' ' . $user->getFirstname() . ' ' . $user->getLastname();
+                } else {
+                    $daysOffFormatted[$keyUser][$keyDayOff]['title'] =
+                        $dayOff->getType() . ' ' . $user->getFirstname() . ' ' . $user->getLastname();
+                }
                 $usersWithDaysOff[$user->getUsername()]['daysOff'] = $daysOffFormatted[$keyUser];
                 $usersWithDaysOff[$user->getUsername()]['color'] = $this->generateRandomColor();
             }
@@ -111,10 +118,8 @@ class CalendarService
         return $freeDaysFormatted;
     }
 
-    public function getDaysOffByUserId(
-        $userId
-    ) {
-
+    public function getDaysOffByUserId($userId)
+    {
         $daysOffFormatted = [];
 
         $daysOff = $this->daysOffRepository->getAllDaysOffWhereUserId($userId);
@@ -135,28 +140,30 @@ class CalendarService
         return $daysOffFormatted;
     }
 
-    public function datePeriod_start_end(
-        $begin,
-        $end
-    ) {
+    public function datePeriod_start_end($begin, $end)
+    {
+        $start = new DateTime($begin);
+        $end = new DateTime($end);
+        $oneday = new DateInterval("P1D");
 
-        $begin = new DateTime($begin);
+        $days = [];
+        $data = "7.5";
 
-        $end = new DateTime($end . ' + 1 day');
-
-        $daterange = new DatePeriod($begin, new DateInterval('P1D'), $end);
-        $dates = [];
-        foreach ($daterange as $date) {
-            $dates[] = $date->format("m/d/Y");
+        /* Iterate from $start up to $end+1 day, one day in each iteration.
+           We add one day to the $end date, because the DatePeriod only iterates up to,
+           not including, the end date. */
+        foreach (new DatePeriod($start, $oneday, $end->add($oneday)) as $day) {
+            $day_num = $day->format("N"); /* 'N' number days 1 (mon) to 7 (sun) */
+            if ($day_num < 6) { /* weekday */
+                $days[] = $day->format("Y-m-d");
+            }
         }
 
-        return $dates;
+        return $days;
     }
 
-    public function getAllDayOffForUser(
-        $daysOffFromUser,
-        $type
-    ) {
+    public function getAllDayOffForUser($daysOffFromUser, $type)
+    {
         //put the days off between dayStart and dayEnd
         $allDayOff = [];
         foreach ($daysOffFromUser as $dayOffFromUser) {
@@ -188,34 +195,27 @@ class CalendarService
         return $freeDaysFormatted;
     }
 
-    public function saveDateOff(
-        $user,
-        $daysOff,
-        $type
-    ) {
+    public function saveDateOff($user, $daysOff, $type)
+    {
         $daysOffStartEnd = explode(' - ', $daysOff);
         if (count($daysOffStartEnd) == 2) {
             $dateStart = new DateTime($daysOffStartEnd[0]);
             $dateEnd = new DateTime($daysOffStartEnd[1]);
 
-            $this->daysOffRepository->save($dateStart, $dateEnd, $user, $type);
+            $this->daysOffRepository->save($dateStart, $dateEnd, null, $user, $type);
         }
     }
 
-    public function saveFreeDay(
-        $date,
-        $name
-    ) {
+    public function saveFreeDay($date, $name)
+    {
         if (!empty($date) && !empty($name)) {
             $date = new DateTime($date);
             $this->freeDaysRepository->save($date, $name);
         }
     }
 
-    public function limitWorkFromHomeDays(
-        $day,
-        $daysOffFromUser
-    ) {
+    public function limitWorkFromHomeDays($day, $daysOffFromUser)
+    {
         $nr = 0;
         $dayOffStartEnd = explode(' - ', $day);
         $monthOfStartDay = explode('/', $dayOffStartEnd [0])[0];
@@ -245,10 +245,8 @@ class CalendarService
         return $nr;
     }
 
-    private function eliminateWeekendsDays(
-        $start,
-        $end
-    ) {
+    private function eliminateWeekendsDays($start, $end)
+    {
         $start = strtotime($start);
         $end = strtotime($end);
         $result = [];
@@ -263,11 +261,8 @@ class CalendarService
         return count($result);
     }
 
-    private function getNrWorkFromHomeDaysFromMonth(
-        $daysOffFromUser,
-        $month,
-        $dayRequest
-    ) {
+    private function getNrWorkFromHomeDaysFromMonth($daysOffFromUser, $month, $dayRequest)
+    {
         $nr = 0;
         foreach ($daysOffFromUser as $dayOff) {
             if ($dayOff['type'] !== 'WH') {
@@ -294,23 +289,20 @@ class CalendarService
         return $nr;
     }
 
-    public function limitDaysOffPerYear(
-        $day,
-        $daysOffFromUser
-    ) {
+    public function limitDaysOffPerYear($day, $daysOffFromUser)
+    {
         $nr = 0;
         $dayOffStartEnd = explode(' - ', $day);
 
         $nr += $this->eliminateWeekendsDays($dayOffStartEnd[0], $dayOffStartEnd[1]);
         $allDaysOffForUser = $this->getAllDayOffForUser($daysOffFromUser, 'CO');
-        $nr += $this->eliminateWeekendsDays($allDaysOffForUser[0], end($allDaysOffForUser));
+        $nr += count($allDaysOffForUser);
 
         return $nr;
     }
 
-    public function getNrDaysOffForUser(
-        $userId
-    ) {
+    public function getNrDaysOffForUser($userId)
+    {
         //get number of legal daysOff for user
 
         if ($this->tableHolidaysForEmployeeRepository->findHolidaysWhereUserId($userId)) {
@@ -318,5 +310,17 @@ class CalendarService
         }
 
         return 0;
+    }
+
+    public function moveFreeDayTo($freeDayId, $user, $dayOff)
+    {
+        $dateStart = new DateTime($dayOff);
+        /**
+         * @var FreeDays $freeDay
+         */
+        $freeDay = $this->freeDaysRepository->findFreeDayWhereId($freeDayId)[0];
+        $dateFrom = new DateTime($freeDay->getDate()->format('Y-m-d'));
+
+        $this->daysOffRepository->save($dateStart, $dateStart, $dateFrom, $user, 'MFD');
     }
 }

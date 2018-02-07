@@ -30,7 +30,8 @@
                             <form action="/" method="post">
                                 <div class="form-group datetimepicker" style="width: 455px;">
                                     <div class='input-group date' id='datetime'>
-                                        <input type='text' id="datepicker" class="form-control" name="_date" required/>
+                                        <input type='text' id="datepicker" class="form-control" name="dateRange"
+                                               required/>
                                         <span class="input-group-addon">
                                             <span class="glyphicon glyphicon-calendar"></span>
                                          </span>
@@ -188,6 +189,7 @@
             var freeDays = '{{ freeDays|raw }}';
             var daysOff = '{{ daysOff|raw }}';
             var finalPath = '';
+            var userId = '{{ user.id }}';
         </script>
         <script type="text/javascript" src="{{ asset('build/dayOff.js') }}">
         </script>
@@ -200,11 +202,15 @@
                 }
             };
             function moveFreeDay(id) {
+                console.log(id);
                 jQuery.ajax({
                     type: "POST",
                     url: Routes.paths.moveRoute.replace('SETID', id),
                     dataType: "json",
-                    data: {value: document.getElementById('datepicker').value},
+                    data: {
+                        day: document.getElementById('datepicker').value,
+                        freeDayId: id
+                    },
                     success: function (data) {
                         //nu intra aici
                         console.log(document.getElementById('datepicker').value);

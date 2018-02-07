@@ -46,9 +46,12 @@ class AuthController extends Controller
         $error = $authenticationUtils->getLastAuthenticationError();
         // last email entered by the user
         $lastUsername = $authenticationUtils->getLastUsername();
-        $form = $this->createForm(LoginType::class, [
-            'email' => $lastUsername,
-        ]);
+        $form = $this->createForm(
+            LoginType::class,
+            [
+                'email' => $lastUsername,
+            ]
+        );
 
         return $this->render(
             'user/login.html.twig',

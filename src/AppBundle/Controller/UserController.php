@@ -4,6 +4,7 @@ namespace AppBundle\Controller;
 
 use AppBundle\Entity\User;
 use AppBundle\Repository\DayOffRepository;
+use AppBundle\Repository\TableHolidaysForEmployeeRepository;
 use AppBundle\Service\CalendarService;
 use AppBundle\Service\MailerService;
 use AppBundle\Service\UserManager;
@@ -15,15 +16,18 @@ class UserController extends Controller
     private $myService;
     private $userManager;
     private $dayOffRepository;
+    private $tableHolidaysForEmployeeRepository;
 
     public function __construct(
         CalendarService $myService,
         UserManager $userManager,
-        DayOffRepository $dayOffRepository
+        DayOffRepository $dayOffRepository,
+        TableHolidaysForEmployeeRepository $tableHolidaysForEmployeeRepository
     ) {
         $this->myService = $myService;
         $this->userManager = $userManager;
         $this->dayOffRepository = $dayOffRepository;
+        $this->tableHolidaysForEmployeeRepository = $tableHolidaysForEmployeeRepository;
     }
 
     public function deleteDayOffAction($id)
@@ -60,6 +64,7 @@ class UserController extends Controller
         $freeAndDaysOff = array_merge(
             $this->myService->getAllDayOffForUser($daysOffFromUser, 'CO'),
             $this->myService->getAllDayOffForUser($daysOffFromUser, 'WH'),
+            $this->myService->getAllDayOffForUser($daysOffFromUser, 'MFD'),
             $this->myService->getFreeDays()
         );
 
@@ -115,11 +120,16 @@ class UserController extends Controller
         ];
     }
 
-    public function moveFreeDayAction($id, Request $request)
+    public function moveFreeDayAction(Request $request)
     {
-        $date = $request->request->get('_date');
-        $post = $request->request->all();
-        dump($request);
+        $user = $this->getUser();
+        $dayOff = $_POST['day'];
+        $freeDayId = $_POST['freeDayId'];
+        if ($request->isMethod('POST') && !empty($dayOff)) {
+            $this->myService->moveFreeDayTo($freeDayId, $user, $dayOff);
+        }
+
+        return $this->redirectToRoute('home');
     }
 
     //the next function it doesn't work

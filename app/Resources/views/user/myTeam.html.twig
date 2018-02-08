@@ -117,8 +117,8 @@
                                         {% for dayOffFromUser in daysOffFromUser %}
                                             <tr data-id="{{ dayOffFromUser.id }}">
                                                 <td>{{ types[dayOffFromUser['type']] }}</td>
-                                                <td>{{ dayOffFromUser['dayStart'] }}</td>
-                                                <td>{{ dayOffFromUser['dayEnd'] }}</td>
+                                                <td>{{ dayOffFromUser['dayStart']|date("d/m/Y") }}</td>
+                                                <td>{{ dayOffFromUser['dayEnd']|date("d/m/Y") }}</td>
                                                 <td>
                                                     <a href="/deleteDayOff/{{ dayOffFromUser.id }}">
                                                         <i type="button" data-id=""

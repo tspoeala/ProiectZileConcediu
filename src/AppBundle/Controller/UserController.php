@@ -135,7 +135,7 @@ class UserController extends Controller
     public function moveFreeDayAction(Request $request)
     {
         $user = $this->getUser();
-        if ($request->isMethod('POST') && $_POST['day']) {
+        if ($request->isMethod('POST')&& $_POST['day']) {
             $dayOff = $_POST['day'];
             $freeDayId = $_POST['freeDayId'];
             $dateFreeDay =

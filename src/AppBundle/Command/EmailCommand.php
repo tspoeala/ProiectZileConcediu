@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: teodora.spoeala
- * Date: 12/4/2017
- * Time: 5:15 PM
- */
 
 namespace AppBundle\Command;
 
@@ -30,40 +24,31 @@ class EmailCommand extends Command
         $this
             ->setName('app:sendEmail')
             ->setDescription('Send email');
-//            ->addArgument('emailfrom', InputArgument::REQUIRED, 'What\'s the sender email address?')
-//            ->addArgument('emailto', InputArgument::REQUIRED, 'What\'s the recipient email address?')
-//            ->addArgument('subject', InputArgument::REQUIRED, 'What\'s the email subject?');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $this->mailerService->sendMessageToTeamMembers('andreea_spoeala@yahoo.com', 'Andreea', '27-28');
-//        $emailfrom = $input->getArgument('emailfrom');
-//        $emailto = $input->getArgument('emailto');
-//
-//        $subject = $input->getArgument('subject');
-//
-//        if ($emailfrom && $emailto) {
-//
-//            $message = \Swift_Message::newInstance()
-//                ->setSubject($subject)
-//                ->setFrom($emailfrom)
-//                ->setTo($emailto)
-//                ->setBody('test');
-////            $this->mailer->send($message);
-//            $this->getContainer()->get('mailer')->send($message);
-//
-//            $text = "Email sent!";
-//        } else {
-//            $text = 'Email not sent';
-//        }
-//
         $output->writeln("Email sent!");
-//        $container = $this->getContainer();
-//        $mailer = $container->get('mailer');
-//        $spool = $mailer->getTransport()->getSpool();
-//        $transport = $container->get('swiftmailer.transport.real');
-//
-//        $spool->flushQueue($transport);
+    }
+
+    //it doesn't work
+    public function email(
+        \Swift_Mailer $mailer
+    ) {
+        $message = (new \Swift_Message())
+            ->setSubject('Hello Email')
+            ->setFrom('exampleEmail')
+            ->setTo('exampleEmail')
+            ->setBody('Here is the message itself')
+            ->addPart('<q>Here is the message itself</q>', 'text/html');
+        if (!$mailer->send($message)) {
+            $this->addFlash(
+                'warning',
+                'The email is not sent'
+            );
+        }
+
+        return $this->render('vacationDays/blank.html.twig');
     }
 }

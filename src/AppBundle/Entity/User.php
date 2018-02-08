@@ -88,14 +88,6 @@ class User implements UserInterface, \Serializable
      */
     private $team;
     /**
-     * @ORM\Column(name="is_active", type="boolean")
-     */
-    private $isActive;
-    /**
-     * @var int
-     */
-    private $isAdmin;
-    /**
      * @var
      * @OneToMany(targetEntity="AppBundle\Entity\DayOff", mappedBy="user")
      */
@@ -103,8 +95,6 @@ class User implements UserInterface, \Serializable
 
     public function __construct()
     {
-        $this->isActive = true;
-        $this->isAdmin = 0;
         $this->setRoles(['ROLE_USER']);
         $this->daysOff = new ArrayCollection();
     }
@@ -117,26 +107,6 @@ class User implements UserInterface, \Serializable
     public function getId()
     {
         return $this->id;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getisActive()
-    {
-        return $this->isActive;
-    }
-
-    /**
-     * @param mixed $isActive
-     *
-     * @return User
-     */
-    public function setIsActive($isActive)
-    {
-        $this->isActive = $isActive;
-
-        return $this;
     }
 
     /**
@@ -290,30 +260,6 @@ class User implements UserInterface, \Serializable
     }
 
     /**
-     * Set isAdmin
-     *
-     * @param integer $isAdmin
-     *
-     * @return User
-     */
-    public function setIsAdmin($isAdmin)
-    {
-        $this->isAdmin = $isAdmin;
-
-        return $this;
-    }
-
-    /**
-     * Get isAdmin
-     *
-     * @return int
-     */
-    public function getIsAdmin()
-    {
-        return $this->isAdmin;
-    }
-
-    /**
      * Returns the salt that was originally used to encode the password.
      *
      * This can return null if the password was not encoded using a salt.
@@ -368,15 +314,13 @@ class User implements UserInterface, \Serializable
      */
     public function serialize()
     {
-        return serialize([
-            $this->id,
-            $this->username,
-            $this->password,
-
-            $this->isActive
-            // see section on salt below
-            // $this->salt,
-        ]);
+        return serialize(
+            [
+                $this->id,
+                $this->username,
+                $this->password,
+            ]
+        );
     }
 
     /**
@@ -397,7 +341,6 @@ class User implements UserInterface, \Serializable
             $this->username,
             $this->password,
 
-            $this->isActive
             // see section on salt below
             // $this->salt
             ) = unserialize($serialized);

@@ -102,10 +102,10 @@ class AdminController extends Controller
             $lastname = $request->request->get('name');
             $userId = $this->userRepository->findUserIdWhereField('lastname', $lastname)[0]['id'];
             $numberOfLegalDayOff = $request->request->get('number');
-            if (!preg_match('/^[1-9][0-9]$/', $numberOfLegalDayOff)) {
+            if (!preg_match('/^[1-9][0-9]*$/', $numberOfLegalDayOff)) {
                 $this->addFlash(
                     'warning',
-                    'You can only enter 2 digits'
+                    'You can only enter only digits'
                 );
 
                 return $this->redirectToRoute('users');
@@ -143,37 +143,16 @@ class AdminController extends Controller
     ) {
         $message = (new \Swift_Message())
             ->setSubject('Hello Email')
-            ->setFrom('andreea_spoeala@yahoo.com')
-            ->setTo('andreea.spoeala@gmail.com')
+            ->setFrom('exampleEmail')
+            ->setTo('exampleEmail')
             ->setBody('Here is the message itself')
-
-            ->addPart('<q>Here is the message itself</q>', 'text/html')
-//            ->setBody(
-//                $this->renderView(
-//                    'emails/exampleEmail.html.twig'
-//                //                    ['name' => 'Teodora']
-//                ),
-//                'text/html'
-//            )/*
-//             * If you also want to include a plaintext version of the message
-//            ->addPart(
-//                $this->renderView(
-//                    'Emails/registration.txt.twig',
-//                    array('name' => $name)
-//                ),
-//                'text/plain'
-//            )
-//            */
-        ;
-        //        dump($mailer->send($message));
-        //        die(__FILE__ . " Line: " . __LINE__);
+            ->addPart('<q>Here is the message itself</q>', 'text/html');
         if (!$mailer->send($message)) {
             $this->addFlash(
                 'warning',
                 'The email is not sent'
             );
         }
-
 
         return $this->render('vacationDays/blank.html.twig');
     }

@@ -66,11 +66,6 @@
                                                 <td>{{ user.firstname }}</td>
                                                 <td>{{ user.lastname }}</td>
                                                 <td>{{ holiday.numberOfDaysOff }}</td>
-                                                {#{% for holiday in holidays %}#}
-                                                {#{% if holiday.userId==user.id %}#}
-                                                {#<td>{{ holiday.numberOfDaysOff }}</td>#}
-                                                {#{% endif %}#}
-                                                {#{% endfor %}#}
                                             </tr>
                                         {% endif %}
                                     {% endfor %}

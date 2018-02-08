@@ -4,13 +4,7 @@ import 'bootstrap-datepicker';
 import 'daterangepicker';
 import 'fullcalendar';
 
-//delete console log at the end
-console.log(array);
-console.log(freeDays);
-console.log(daysOff);
 var event = [];
-
-
 $(function () {
     $('input[name="daterange"]').daterangepicker(
         {
@@ -50,7 +44,10 @@ $(function () {
                     return false;
                 }
                 else if (userId) {
-                    $('#addModal').modal();
+                    $('#addModal').modal({
+                        backdrop: 'static',
+                        keyboard: false
+                    });
                     $('#modalSaveBtn').attr('onclick', 'javascript:moveFreeDay(' + id + ')');
                 }
             },
@@ -73,7 +70,6 @@ $(function () {
 });
 
 $(function () {
-    console.log(array);
     $('#datetime').datepicker({
                       autoclose: true,    // It is false, by default
                       format: 'mm/dd/yyyy',

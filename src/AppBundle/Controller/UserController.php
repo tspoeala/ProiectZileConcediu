@@ -19,6 +19,11 @@ class UserController extends Controller
     private $dayOffRepository;
     private $tableHolidaysForEmployeeRepository;
     private $freeDaysRepository;
+    const types = [
+        'CO' => 'Concediu de odihna',
+        'WH' => 'Work from home',
+        'MFD' => 'Move free day',
+    ];
 
     public function __construct(
         CalendarService $myService,
@@ -81,6 +86,8 @@ class UserController extends Controller
                 'freeDays' => json_encode($freeDays),
                 'daysOff' => json_encode($this->getInfo($user)['daysOff']),
                 'daysOffFromUser' => $daysOffFromUser,
+                'nrOfDaysOffForUser' => $this->getInfo($user)['nrOfDaysOff'],
+                'types' => self::types,
             ]
         );
     }
@@ -121,20 +128,21 @@ class UserController extends Controller
             'daysOffFromUser' => $this->myService->getDaysOffByUserId($user->getId()),
             'usersFromTeam' => $this->userManager->getUsersByTeam($user->getTeam()),
             'daysOff' => $this->myService->getDaysOffForFullCalendar($user),
+            'nrOfDaysOff' => $this->myService->getNrDaysOffForUser($user->getId()),
         ];
     }
 
     public function moveFreeDayAction(Request $request)
     {
         $user = $this->getUser();
-        $dayOff = $_POST['day'];
-        $freeDayId = $_POST['freeDayId'];
-        if ($request->isMethod('POST') && !empty($dayOff)) {
+        if ($request->isMethod('POST') && $_POST['day']) {
+            $dayOff = $_POST['day'];
+            $freeDayId = $_POST['freeDayId'];
             $dateFreeDay =
                 ($this->freeDaysRepository->findFreeDayWhereField('id', $freeDayId)[0])->getDate()->format('Y-m-d');
-            if (!empty($this->dayOffRepository->findDayOffWhereUserIdAndDateFrom($user, $dateFreeDay)[0])) {
+            if ($this->dayOffRepository->findDayOffWhereUserAndDateFrom($user, $dateFreeDay)) {
                 $id =
-                    $this->dayOffRepository->findDayOffWhereUserIdAndDateFrom($user->getId(), $dateFreeDay)[0]->getId();
+                    $this->dayOffRepository->findDayOffWhereUserAndDateFrom($user, $dateFreeDay)[0]->getId();
                 $this->dayOffRepository->deleteDayOffWhereField('id', $id);
             }
             $this->myService->moveFreeDayTo($freeDayId, $user, $dayOff);

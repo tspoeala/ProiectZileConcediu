@@ -98,6 +98,9 @@
                             <div class="panel-heading">
                                 <i class="fa fa-clock-o fa-fw"></i> Your Days Off
                             </div>
+                            <div class="panel-heading">
+                                You have the right at {{ nrOfDaysOffForUser }} days off per year.
+                            </div>
                             <!-- /.panel-heading -->
                             <div class="panel-body">
                                 <div class="table-responsive">
@@ -113,7 +116,7 @@
                                         <tbody>
                                         {% for dayOffFromUser in daysOffFromUser %}
                                             <tr data-id="{{ dayOffFromUser.id }}">
-                                                <td>{{ dayOffFromUser['type'] }}</td>
+                                                <td>{{ types[dayOffFromUser['type']] }}</td>
                                                 <td>{{ dayOffFromUser['dayStart'] }}</td>
                                                 <td>{{ dayOffFromUser['dayEnd'] }}</td>
                                                 <td>
@@ -202,7 +205,6 @@
                 }
             };
             function moveFreeDay(id) {
-                console.log(id);
                 jQuery.ajax({
                     type: "POST",
                     url: Routes.paths.moveRoute.replace('SETID', id),
@@ -212,7 +214,7 @@
                         freeDayId: id
                     },
                     success: function (data) {
-                        
+
                     }
                 });
 

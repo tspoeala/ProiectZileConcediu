@@ -66,7 +66,7 @@ class DayOffRepository extends ServiceEntityRepository
                     ->getResult();
     }
 
-    public function findDayOffWhereUserIdAndDateFrom($user, $dateFrom)
+    public function findDayOffWhereUserAndDateFrom($user, $dateFrom)
     {
         return $this->getEntityManager()
                     ->createQueryBuilder()

@@ -43,7 +43,7 @@
                             </div>
                             <hr class="colorgraph">
                         </form>
-                        {% if(users is not empty) %}
+                        {% if users is not empty %}
                             <div class="table-responsive">
                                 <table class="table table-bordered table-hover table-striped">
                                     <thead>
@@ -59,16 +59,16 @@
                                     <tbody>
                                     {% for user in users %}
                                         {% if(user.firstname!='admin') %}
-                                    {% for holiday in holidays %}
-                                        {% if holiday.userId==user.id %}
-                                            <tr id="{{ user.id }}">
-                                                <td>{{ user.id }}</td>
-                                                <td>{{ user.firstname }}</td>
-                                                <td>{{ user.lastname }}</td>
-                                                <td>{{ holiday.numberOfDaysOff }}</td>
-                                            </tr>
-                                        {% endif %}
-                                    {% endfor %}
+                                            {% for holiday in holidays %}
+                                                {% if holiday.userId==user.id %}
+                                                    <tr id="{{ user.id }}">
+                                                        <td>{{ user.id }}</td>
+                                                        <td>{{ user.firstname }}</td>
+                                                        <td>{{ user.lastname }}</td>
+                                                        <td>{{ holiday.numberOfDaysOff }}</td>
+                                                    </tr>
+                                                {% endif %}
+                                            {% endfor %}
                                         {% endif %}
                                     {% endfor %}
                                     </tbody>
